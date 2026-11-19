@@ -1,0 +1,20 @@
+{% load static shop_extras %}<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Hép Store{% endblock %} · Sách và cảm hứng Nhật Bản</title>
+<meta name="description" content="Hép Store — không gian đọc sách, học tiếng Nhật và khám phá văn hóa Nhật Bản dành cho độc giả Việt.">
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% block head %}{% endblock %}</head><body>
+<div class="topline">HÉP STORE · 日本の本と文化 <span>Miễn phí giao hàng từ 350.000₫ · Website mẫu học tập</span></div>
+<header class="site-header"><div class="wrap header-layout">
+<a href="{% url 'home' %}" class="brand"><span class="brand-mark">へ</span><span><strong>Hép Store</strong><small>ĐỌC SÁCH · HIỂU NHẬT BẢN</small></span></a>
+<nav class="main-nav"><a href="{% url 'catalog' %}">Khám phá sách</a><a href="{% url 'about' %}">Câu chuyện Hép</a><a href="{% url 'track_order' %}">Tra cứu đơn</a><a href="{% url 'contact' %}">Liên hệ</a></nav>
+<div class="header-actions"><a class="mini-link" href="{% url 'cart' %}">Giỏ hàng <span class="count">{{ cart_count }}</span></a>
+{% if user.is_authenticated %}<a class="mini-link" href="{% url 'account' %}">Tài khoản</a>{% if user.is_staff %}<a class="mini-link admin-link" href="{% url 'dashboard' %}">Quản trị ↗</a>{% endif %}<form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="text-btn">Thoát</button></form>
+{% else %}<a class="mini-link" href="{% url 'login' %}">Đăng nhập</a>{% endif %}</div></div></header>
+{% if messages %}<div class="wrap notifications">{% for message in messages %}<div class="notice {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+<main>{% block content %}{% endblock %}</main>
+<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand" href="{% url 'home' %}"><span class="brand-mark">へ</span><span><strong>Hép Store</strong><small>ĐỌC SÁCH · HIỂU NHẬT BẢN</small></span></a><p>Một góc đọc nhẹ nhàng cho những tâm hồn yêu văn hóa Nhật. Sản phẩm và thông tin mẫu cần được thay bằng thông tin kinh doanh thật trước khi công bố.</p></div>
+<div><h4>Khám phá</h4><a href="{% url 'catalog' %}">Tủ sách Việt–Nhật</a><a href="{% url 'about' %}">Về Hép Store</a><a href="{% url 'contact' %}">Liên hệ</a></div>
+<div><h4>Hỗ trợ</h4><a href="{% url 'policies' %}">Chính sách mua hàng</a><a href="{% url 'track_order' %}">Theo dõi đơn hàng</a><a href="{% url 'cart' %}">Giỏ hàng</a></div>
+<div><h4>Minh bạch</h4><p>Giá hiển thị bằng VNĐ. Thanh toán chuyển khoản cần được xác nhận thủ công. Không tự suy đoán khách đã chuyển tiền khi mã QR xuất hiện.</p></div></div><div class="wrap footer-bottom">© Hép Store · Website demo Django · Giao diện lấy cảm hứng từ tinh thần tối giản Nhật Bản.</div></footer>
+<script defer src="{% static 'js/site.js' %}"></script>{% block scripts %}{% endblock %}</body></html>

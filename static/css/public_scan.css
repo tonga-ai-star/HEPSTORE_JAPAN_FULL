@@ -1,0 +1,33 @@
+/* Separate public barcode scanner pages (not part of /management/) */
+.scan-hero{background:linear-gradient(115deg,#20384a 0%,#243e43 68%,#50625b 100%);color:#fff;padding:58px 0 62px;position:relative;overflow:hidden}
+.scan-hero:after{content:'本';position:absolute;font:220px serif;opacity:.05;top:-90px;right:5%;pointer-events:none}
+.scan-hero-inner{position:relative;z-index:1}.scan-kicker{display:block;color:#ae6157;letter-spacing:2.1px;font-weight:700;font-size:10px}
+.scan-hero .scan-kicker{color:#e5bca5}.scan-hero h1{font-family:'Noto Serif',serif;max-width:780px;margin:12px 0;font-size:clamp(32px,4.4vw,54px);font-weight:500}
+.scan-hero h1 em{color:#f1bd9d;font-style:normal}.scan-hero p{max-width:630px;color:#dbe3e1;font-size:14px;line-height:1.8}
+.scan-content{display:grid;grid-template-columns:1.12fr 1fr;gap:24px;padding-top:40px;padding-bottom:30px}
+.scan-panel{background:#fff;border:1px solid #e9e3d8;padding:28px;min-width:0;box-shadow:0 12px 38px #1d262408}
+.scan-panel-heading{display:flex;align-items:start;gap:16px;margin-bottom:20px}.scan-panel-heading h2{font-family:'Noto Serif',serif;font-size:25px;margin:0 0 4px}
+.scan-panel-heading p{margin:0;color:#7b8280;font-size:12px}.scan-count{min-width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#af6456;border:1px solid #d8b0a5;font-size:12px}
+.scan-camera{height:285px;background:#1b2930;position:relative;border-radius:7px;overflow:hidden;display:grid;place-items:center}
+.scan-camera video{width:100%;height:100%;object-fit:cover;background:#1b2930}
+.scan-frame{pointer-events:none;position:absolute;width:74%;height:42%;border:2px solid #d7c3a8;box-shadow:0 0 0 300px rgba(0,0,0,.08);border-radius:8px;left:13%;top:29%;z-index:1}
+.scan-frame:before,.scan-frame:after{content:'';position:absolute;width:33px;height:4px;background:#fff;top:-3px}.scan-frame:before{left:-3px}.scan-frame:after{right:-3px}
+.scan-camera-placeholder{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:#1b2930;color:#b5c6c8;font:72px serif;z-index:2}
+.scan-camera-placeholder span{display:block;font:13px 'DM Sans',sans-serif;color:#f0eeee;margin-top:6px}
+.scan-camera.is-live .scan-camera-placeholder{display:none}.scan-camera:not(.is-live) .scan-frame{display:none}
+.scan-status{min-height:23px;color:#5b6969;margin:13px 0 18px;font-size:12px}.scan-status.error,.scan-error{color:#ad4039}
+.scan-actions{display:flex;flex-wrap:wrap;gap:10px}.scan-actions .btn{flex:1;min-width:170px}.scan-actions .btn:disabled{opacity:.5;cursor:not-allowed}
+.scan-note,.scan-disclaimer{color:#78827e;font-size:11px;line-height:1.75;margin:18px 0 0}
+.scan-manual form{margin-top:30px}.scan-manual label{display:block;font-weight:700;font-size:12px;margin-bottom:8px}.scan-manual input{width:100%;padding:14px 13px;font-size:17px;border:1px solid #d7d4cb;border-radius:4px;background:#fffdf9;margin:0 0 14px;letter-spacing:1px}
+.scan-manual form .btn{width:100%}.scan-demo{border-top:1px solid #eee7de;margin-top:26px;padding-top:20px;font-size:12px;color:#596662}.scan-demo>span{font-size:10px;letter-spacing:1px;color:#a35d4f;font-weight:700}.scan-demo a{color:#b3473c;text-decoration:underline}.scan-demo code{background:#f5f2eb;padding:2px 4px}
+.scan-after{padding-top:28px;padding-bottom:70px}.scan-after h2{font:26px 'Noto Serif',serif}.scan-after>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.scan-after>div span{background:#eee8dd;padding:18px;font-size:12px}.scan-after p{color:#717e79;font-size:12px}
+.scan-result-page{padding-top:30px;padding-bottom:85px}.scan-path{margin:0 0 26px;font-size:12px;color:#7e8580}.scan-path a{color:#bd6152}.scan-result-card{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);background:#fff;border:1px solid #e9e3d8}
+.scan-result-cover{background:#ebe5da;min-height:490px;display:grid;place-items:center;padding:38px}.scan-result-cover img{width:100%;max-height:440px;object-fit:contain;box-shadow:9px 13px 21px #29363226}
+.scan-result-placeholder{width:250px;min-height:330px;background:#a95d54;color:white;display:flex;flex-direction:column;justify-content:space-between;padding:28px;box-shadow:9px 13px 21px #29363226}.scan-result-placeholder span{font:100px serif;opacity:.3}.scan-result-placeholder strong{font:28px 'Noto Serif',serif}
+.scan-result-info{padding:clamp(24px,4vw,53px)}.scan-result-info h1{font:500 clamp(28px,3vw,43px) 'Noto Serif',serif;margin:13px 0}.scan-japanese{color:#ac6154;font:20px serif;margin:0 0 14px}.scan-author{color:#8a918f;font-size:13px}
+.scan-price-label{font-size:10px;letter-spacing:1.7px;color:#7b8580;margin-top:25px}.scan-price{font:700 clamp(28px,3.5vw,42px) 'Noto Serif',serif;color:#ac4a3f;margin:8px 0}
+.scan-available{color:#29764f;font-weight:700}.scan-unavailable{color:#bd514d;font-weight:700}.scan-detail-facts{border-top:1px solid #eee7de;margin:22px 0;padding:16px 0;display:grid;gap:8px}.scan-detail-facts>div{display:flex;justify-content:space-between;gap:15px}.scan-detail-facts span{color:#858c89;font-size:12px}.scan-detail-facts strong{font-size:12px;text-align:right}
+.scan-result-actions{display:flex;gap:10px;flex-wrap:wrap}.scan-result-actions form{margin:0}.scan-result-actions .btn{white-space:nowrap}
+.scan-not-found{max-width:770px;text-align:center;margin:38px auto;background:#fff;border:1px solid #eae5dc;padding:50px 28px}.scan-not-found-symbol{display:grid;place-items:center;border:2px solid #c7ab96;color:#b46a57;width:70px;height:70px;border-radius:50%;margin:0 auto 20px;font:36px serif}.scan-not-found h1{font:32px 'Noto Serif',serif}.scan-not-found p{line-height:1.9;color:#78827e}.scan-not-found>div{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:23px}
+@media(max-width:850px){.scan-content,.scan-result-card{grid-template-columns:1fr}.scan-result-cover{min-height:310px}.scan-result-cover img{max-height:340px}.scan-after>div{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.scan-hero{padding:40px 0}.scan-panel{padding:19px}.scan-camera{height:235px}.scan-after>div{grid-template-columns:1fr}.scan-result-info{padding:25px 18px}.scan-result-actions .btn{width:100%;text-align:center}.scan-result-actions form{width:100%}.scan-result-cover{padding:25px}}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}{% load static %}
+{% block title %}Quét mã vạch sách{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/public_scan.css' %}">{% endblock %}
+{% block content %}
+<section class="scan-hero"><div class="wrap scan-hero-inner">
+  <div class="scan-kicker">HÉP STORE · 本のバーコード</div>
+  <h1>Quét mã vạch, <em>biết ngay giá sách.</em></h1>
+  <p>Trang tra cứu công khai, không cần đăng nhập quản trị. Hướng camera vào mã vạch ISBN in trên bìa sách để mở trang thông tin và giá bán.</p>
+</div></section>
+<section class="wrap scan-content" id="public-scanner">
+ <div class="scan-panel">
+  <div class="scan-panel-heading"><span class="scan-count">01</span><div><h2>Quét bằng camera</h2><p>Hỗ trợ ISBN EAN-13 và một số mã vạch phổ biến.</p></div></div>
+  <div class="scan-camera" id="scan-camera">
+    <video id="barcode-video" autoplay muted playsinline aria-label="Khung hình camera quét mã vạch"></video>
+    <div class="scan-frame" aria-hidden="true"><span></span></div>
+    <div class="scan-camera-placeholder" id="scan-placeholder">◈<span>Chưa bật camera</span></div>
+  </div>
+  <p class="scan-status" id="scan-status" role="status" aria-live="polite">Nhấn “Bật camera” để bắt đầu quét.</p>
+  <div class="scan-actions">
+    <button id="start-barcode-scan" class="btn btn-red" type="button">◉ Bật camera quét mã</button>
+    <button id="stop-barcode-scan" class="btn btn-outline" type="button" disabled>Dừng camera</button>
+  </div>
+  <p class="scan-note">Camera hoạt động trên <strong>localhost</strong> hoặc website có <strong>HTTPS</strong>. Nếu trình duyệt không hỗ trợ hoặc bị từ chối quyền camera, hãy nhập mã bên cạnh.</p>
+ </div>
+ <div class="scan-panel scan-manual">
+   <div class="scan-panel-heading"><span class="scan-count">02</span><div><h2>Nhập ISBN / SKU</h2><p>Có thể dùng máy quét USB, thao tác như bàn phím.</p></div></div>
+   <form id="scan-manual-form" method="get" action="{% url 'public_scan_lookup' %}">
+     <label for="isbn-value">Mã ISBN / mã sách</label>
+     <input id="isbn-value" name="isbn" type="text" inputmode="text" autocomplete="off" maxlength="30" placeholder="Ví dụ: 9786041234567" value="{{ scan_value|default:'' }}" required>
+     {% if scan_error %}<p class="scan-error" role="alert">{{ scan_error }}</p>{% endif %}
+     <button class="btn btn-dark" type="submit">Tra cứu giá sách ↗</button>
+   </form>
+   <div class="scan-demo"><span>THỬ VỚI DỮ LIỆU DEMO</span><p>Mã <code>HEP-DEMO-001</code> là mã sách giả lập trong source. Có thể <a href="{% url 'public_scan_result' 'HEP-DEMO-001' %}">xem thử kết quả</a> nếu đã chạy lệnh <code>seed_demo</code>, nhưng mã này không phải mã vạch ISBN ngoài đời.</p></div>
+ </div>
+</section>
+<section class="wrap scan-after"><h2>Quét xong sẽ thấy gì?</h2><div><span>01 · Bìa và tên sách</span><span>02 · Giá bán theo dữ liệu hiện tại</span><span>03 · Tình trạng còn hàng</span><span>04 · Đường dẫn mua trên website</span></div><p>Để quét sách thật, mã ISBN lưu trong quản trị Hép Store phải trùng mã in trên sách.</p></section>
+{% endblock %}
+{% block scripts %}<script defer src="{% static 'js/public_scan.js' %}"></script>{% endblock %}
