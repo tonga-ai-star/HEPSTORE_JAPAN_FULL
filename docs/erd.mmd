@@ -1,0 +1,170 @@
+erDiagram
+  User {
+    int id PK
+    varchar username UK
+    varchar first_name
+    varchar email
+    bool is_staff
+    bool is_superuser
+    bool is_active
+  }
+  Category {
+    bigint id PK
+    varchar name_vi
+    varchar name_ja
+    varchar slug UK
+    text description
+    int sort_order
+  }
+  Supplier {
+    bigint id PK
+    varchar name
+    varchar contact_name
+    varchar phone
+    varchar email
+    varchar address
+    text note
+    bool active
+    datetime created_at
+  }
+  Book {
+    bigint id PK
+    bigint category_id FK
+    bigint supplier_id FK
+    varchar title_vi
+    varchar title_ja
+    varchar slug UK
+    varchar author_ja
+    varchar publisher
+    varchar isbn UK
+    text description_vi
+    int price
+    int cost_price
+    int stock
+    int min_stock
+    bool allow_preorder
+    smallint restock_days
+    varchar cover
+    bool featured
+    bool active
+    datetime created_at
+  }
+  Customer {
+    bigint id PK
+    bigint user_id FK
+    varchar full_name
+    varchar email
+    varchar phone
+    text address
+    text note
+    datetime created_at
+  }
+  Order {
+    bigint id PK
+    varchar order_code UK
+    bigint customer_id FK
+    varchar source
+    varchar status
+    varchar payment_method
+    varchar payment_status
+    varchar full_name
+    varchar phone
+    varchar email
+    text address
+    text note
+    int subtotal
+    int shipping_fee
+    int total
+    bigint created_by_id FK
+    bigint payment_confirmed_by_id FK
+    datetime paid_at
+    varchar paid_via
+    bool is_preorder
+    date expected_date
+    datetime created_at
+    datetime updated_at
+  }
+  OrderItem {
+    bigint id PK
+    bigint order_id FK
+    bigint book_id FK
+    varchar title_snapshot
+    varchar sku_snapshot
+    int quantity
+    int unit_price
+    int line_total
+    int preorder_qty
+  }
+  PaymentTransaction {
+    bigint id PK
+    bigint order_id FK
+    varchar provider
+    varchar provider_txn_id
+    varchar reference_code
+    varchar gateway
+    varchar account_number
+    bigint amount
+    text content
+    varchar status
+    json raw_payload
+    datetime transaction_at
+    datetime received_at
+    bigint resolved_by_id FK
+  }
+  StockMovement {
+    bigint id PK
+    bigint book_id FK
+    int delta
+    varchar reason
+    varchar reference
+    bigint actor_id FK
+    datetime created_at
+  }
+  PurchaseOrder {
+    bigint id PK
+    bigint supplier_id FK
+    varchar status
+    text note
+    bigint created_by_id FK
+    datetime created_at
+    datetime received_at
+  }
+  PurchaseItem {
+    bigint id PK
+    bigint purchase_id FK
+    bigint book_id FK
+    int quantity
+    int unit_cost
+  }
+  StaffProfile {
+    bigint id PK
+    bigint user_id FK
+    varchar role
+    varchar phone
+    datetime created_at
+  }
+  ContactMessage {
+    bigint id PK
+    varchar full_name
+    varchar email
+    varchar subject
+    text message
+    datetime created_at
+  }
+  Category ||--o{ Book : "category"
+  Supplier |o--o{ Book : "supplier"
+  User |o--o| Customer : "user"
+  Customer |o--o{ Order : "customer"
+  User |o--o{ Order : "created_by"
+  User |o--o{ Order : "payment_confirmed_by"
+  Order ||--o{ OrderItem : "order"
+  Book ||--o{ OrderItem : "book"
+  Order |o--o{ PaymentTransaction : "order"
+  User |o--o{ PaymentTransaction : "resolved_by"
+  Book ||--o{ StockMovement : "book"
+  User |o--o{ StockMovement : "actor"
+  Supplier ||--o{ PurchaseOrder : "supplier"
+  User |o--o{ PurchaseOrder : "created_by"
+  PurchaseOrder ||--o{ PurchaseItem : "purchase"
+  Book ||--o{ PurchaseItem : "book"
+  User ||--o| StaffProfile : "user"

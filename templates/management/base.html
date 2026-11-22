@@ -1,18 +1,29 @@
-{% extends 'base.html' %}{% load shop_extras %}{% block title %}{% block manage_title %}Quản trị{% endblock %}{% endblock %}
-{% block content %}<div class="management-shell"><aside class="manager-sidebar"><div class="sidebar-label">BACK OFFICE <span>管理</span></div>
-<a href="{% url 'dashboard' %}">▦ &nbsp; Tổng quan</a>
-<a href="{% url 'manage_orders' %}">▤ &nbsp; Đơn hàng</a>
-<a href="{% url 'pos' %}">▣ &nbsp; POS · Quét sách</a>
-<a href="{% url 'social_order' %}">✳ &nbsp; Facebook / Instagram</a>
-<div class="sidebar-sep">SẢN PHẨM & KHO</div>
-<a href="{% url 'manage_books' %}">▧ &nbsp; Quản lý sách</a>
-<a href="{% url 'manage_inventory' %}">▥ &nbsp; Tồn kho · Lịch sử</a>
-<a href="{% url 'manage_suppliers' %}">▤ &nbsp; Nhà cung cấp</a>
-<a href="{% url 'manage_purchases' %}">↙ &nbsp; Phiếu nhập hàng</a>
-<div class="sidebar-sep">PHÂN TÍCH & QUẢN LÝ</div>
-<a href="{% url 'manage_customers' %}">♙ &nbsp; Khách hàng</a>
-<a href="{% url 'manage_reports' %}">▥ &nbsp; Báo cáo bán hàng</a>
-<a href="/admin/">⚙ &nbsp; Django Admin</a>
-<a href="{% url 'home' %}">↗ &nbsp; Xem website</a>
-<p class="sidebar-hint">Đơn hàng và tồn kho đồng bộ giữa bốn kênh. Chỉ nhân viên được truy cập trang này.</p></aside>
-<div class="manager-main">{% block manage_content %}{% endblock %}</div></div>{% endblock %}
+{% extends 'base.html' %}{% load static shop_extras %}{% block title %}{% block manage_title %}Quản trị{% endblock %}{% endblock %}
+{% block scripts %}<script defer src="{% static 'js/admin-motion.js' %}"></script>{% endblock %}
+{% block content %}{% with n=request.resolver_match.url_name %}<div class="management-shell" data-shell>
+<aside class="manager-sidebar" id="manager-sidebar" aria-label="Điều hướng quản trị"{% if 'payments_latest' in allowed_pages %} data-payments-feed="{% url 'payments_latest' %}"{% endif %}>
+<div class="sidebar-top"><span class="sidebar-brand">{% include 'shop/_bear.html' with size=28 %}<span class="side-label">Quản trị</span></span><button type="button" class="sidebar-toggle" data-sidebar-toggle aria-controls="manager-sidebar" aria-expanded="true" aria-label="Thu gọn thanh bên"><i class="ph ph-sidebar-simple" aria-hidden="true"></i></button></div>
+<span class="role-chip{% if staff_role == 'manager' %} is-manager{% endif %}">{% if user.is_superuser %}Chủ cửa hàng{% elif staff_role == 'manager' %}Quản lý{% elif staff_role == 'warehouse' %}Kho{% else %}Bán hàng{% endif %}</span>
+<nav class="sidebar-nav">
+{% if 'dashboard' in allowed_pages %}<a class="side-item" href="{% url 'dashboard' %}" title="Tổng quan"{% if n == 'dashboard' %} aria-current="page"{% endif %}><i class="ph ph-squares-four" aria-hidden="true"></i><span class="side-label">Tổng quan</span></a>{% endif %}
+{% if 'manage_orders' in allowed_pages %}<a class="side-item" href="{% url 'manage_orders' %}" title="Đơn hàng"{% if n == 'manage_orders' or n == 'manage_order_detail' %} aria-current="page"{% endif %}><i class="ph ph-receipt" aria-hidden="true"></i><span class="side-label">Đơn hàng</span></a>{% endif %}
+{% if 'pos' in allowed_pages %}<a class="side-item" href="{% url 'pos' %}" title="POS · Quét sách"{% if n == 'pos' %} aria-current="page"{% endif %}><i class="ph ph-barcode" aria-hidden="true"></i>
+<span class="side-label">POS · Quét sách</span></a>{% endif %}
+{% if 'social_order' in allowed_pages %}<a class="side-item" href="{% url 'social_order' %}" title="Facebook / Instagram"{% if n == 'social_order' %} aria-current="page"{% endif %}><i class="ph ph-chat-circle-text" aria-hidden="true"></i><span class="side-label">Facebook / Instagram</span></a>{% endif %}
+<div class="sidebar-sep">Sản phẩm và kho</div>
+{% if 'manage_books' in allowed_pages %}<a class="side-item" href="{% url 'manage_books' %}" title="Quản lý sách"{% if n == 'manage_books' or n == 'manage_book_add' or n == 'manage_book_edit' %} aria-current="page"{% endif %}><i class="ph ph-books" aria-hidden="true"></i><span class="side-label">Quản lý sách</span></a>{% endif %}
+{% if 'manage_inventory' in allowed_pages %}<a class="side-item" href="{% url 'manage_inventory' %}" title="Tồn kho · Lịch sử"{% if n == 'manage_inventory' %} aria-current="page"{% endif %}><i class="ph ph-stack" aria-hidden="true"></i>
+<span class="side-label">Tồn kho · Lịch sử</span></a>{% endif %}
+{% if 'manage_suppliers' in allowed_pages %}<a class="side-item" href="{% url 'manage_suppliers' %}" title="Nhà cung cấp"{% if n == 'manage_suppliers' or n == 'supplier_add' or n == 'supplier_edit' or n == 'supplier_detail' %} aria-current="page"{% endif %}><i class="ph ph-truck" aria-hidden="true"></i><span class="side-label">Nhà cung cấp</span></a>{% endif %}
+{% if 'manage_purchases' in allowed_pages %}<a class="side-item" href="{% url 'manage_purchases' %}" title="Phiếu nhập hàng"{% if n == 'manage_purchases' or n == 'purchase_new' or n == 'purchase_detail' %} aria-current="page"{% endif %}><i class="ph ph-tray-arrow-down" aria-hidden="true"></i><span class="side-label">Phiếu nhập hàng</span></a>{% endif %}
+<div class="sidebar-sep">Phân tích và quản lý</div>
+{% if 'manage_customers' in allowed_pages %}<a class="side-item" href="{% url 'manage_customers' %}" title="Khách hàng"{% if n == 'manage_customers' or n == 'customer_add' or n == 'customer_edit' or n == 'customer_detail' %} aria-current="page"{% endif %}><i class="ph ph-users" aria-hidden="true"></i><span class="side-label">Khách hàng</span></a>{% endif %}
+{% if 'manage_reports' in allowed_pages %}<a class="side-item" href="{% url 'manage_reports' %}" title="Báo cáo bán hàng"{% if n == 'manage_reports' %} aria-current="page"{% endif %}><i class="ph ph-chart-bar" aria-hidden="true"></i><span class="side-label">Báo cáo bán hàng</span></a>{% endif %}
+{% if 'manage_payments' in allowed_pages %}<a class="side-item" data-side-payments href="{% url 'manage_payments' %}" title="Tiền vào"{% if n == 'manage_payments' %} aria-current="page"{% endif %}><i class="ph ph-bank" aria-hidden="true"></i><span class="side-label">Tiền vào (SePay)</span></a>{% endif %}
+{% if 'manage_staff' in allowed_pages %}<a class="side-item" href="{% url 'manage_staff' %}" title="Nhân viên"{% if n == 'manage_staff' or n == 'staff_add' or n == 'staff_edit' %} aria-current="page"{% endif %}><i class="ph ph-identification-badge" aria-hidden="true"></i><span class="side-label">Nhân viên và quyền</span></a>{% endif %}
+{% if user.is_superuser %}<a class="side-item" href="/admin/" title="Django Admin"><i class="ph ph-gear-six" aria-hidden="true"></i><span class="side-label">Django Admin</span></a>{% endif %}
+<a class="side-item side-exit" href="{{ shop_url }}" title="Xem website"><i class="ph ph-storefront" aria-hidden="true"></i><span class="side-label">Xem website</span></a>
+</nav>
+<p class="sidebar-hint">Đơn hàng và tồn kho đồng bộ giữa bốn kênh. Quyền hiện tại: {% if staff_role == 'manager' %}Quản lý{% elif staff_role == 'warehouse' %}Kho{% else %}Bán hàng{% endif %}.</p>
+</aside>
+<div class="manager-main">{% block manage_content %}{% endblock %}</div></div>{% endwith %}{% endblock %}

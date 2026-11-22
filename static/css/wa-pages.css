@@ -1,0 +1,326 @@
+/* Đợt "wa" lượt B: các trang ngoài trang chủ (footer, chi tiết, tủ sách, giỏ, checkout, đơn, tra cứu, about, 404, chính sách).
+   Đặc tả _workspace/10_designer_wa_spec.md mục 5.8, 6, 7. Dùng lại class chung và keyframes của wa.css (nạp trước file này).
+   Không mã hex; chuyển động chỉ transform/opacity, nằm sau .motion-on; khối reduced-motion cuối app.css tắt hết. */
+
+/* ---------- 1. đồ vật dùng chung thêm ở lượt B ---------- */
+.paper-panel.washi{background:none;border-radius:0;box-shadow:none;padding-bottom:46px}
+/* khối có .three-burst (position:fixed) bên trong: filter sẽ biến khối thành khung chứa của lớp nổ, nên bỏ bóng */
+.washi--flat{filter:none}
+.slip-tape{position:absolute;top:-10px;left:50%;width:72px;height:20px;translate:-50% 0;rotate:3deg;background:var(--tape);mask:url('../img/wa/tape-edge.svg') 0 0/100% 100%}
+.receipt-slot{position:sticky;top:100px;padding:6px 12px 28px;overflow:clip;filter:drop-shadow(0 12px 18px color-mix(in srgb,var(--navy) 16%,transparent))}
+.receipt-slot::before{content:'';position:absolute;top:0;left:0;right:0;z-index:2;height:12px;border-radius:var(--radius-pill);background:var(--navy)}
+.receipt-slot .total-panel.receipt{position:relative;top:auto;padding:30px 24px 38px;border:0;border-radius:0;background:var(--surface);
+  mask:url('../img/wa/zigzag.svg') bottom/16px 8px repeat-x,var(--wa-solid) top/100% calc(100% - 7px) no-repeat}
+.receipt hr{border-top:1.5px dashed var(--line)}
+.receipt-ja,.slip-ja{display:block;margin-bottom:6px;font:700 13px/1 var(--font-jp);letter-spacing:.3em;color:var(--orange-ink)}
+.receipt-ja{display:inline-block;margin-bottom:12px;padding:7px 8px 7px 11px;font-size:19px;letter-spacing:.2em;border-radius:3px;box-shadow:inset 0 0 0 2.5px var(--orange-ink);rotate:-5deg;mask:url('../img/wa/hanko-grain.svg') 0 0/72px}
+
+/* ---------- 2. footer: sóng, mép giấy xé, chữ dọc, dấu tiệm ---------- */
+.site-footer{margin-top:72px;padding:0;background:none;border-top:0}
+.footer-wave{height:56px}
+.footer-wave::before{bottom:0}
+.footer-wave::after{display:none}
+.footer-paper{position:relative;isolation:isolate;padding:64px 0 32px;background:var(--surface-2);overflow-x:clip}
+.footer-paper::before{content:'';position:absolute;top:-13px;left:0;right:0;height:14px;scale:1 -1;background:var(--surface-2);mask:url('../img/wa/washi-tear.svg') 0 0/100% 100% no-repeat}
+.footer-paper::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--ink-soft);opacity:.06;mask:url('../img/wa/washi-fiber.svg') 0 0/220px}
+.footer-grid,.footer-bottom{padding-right:96px}
+.footer-sign{display:flex;align-items:center;gap:16px}
+.footer-seal{transform:rotate(-8deg)}
+.footer-tate{position:absolute;right:max(32px,calc((100% - 1240px) / 2 + 32px));top:48px;white-space:nowrap;font-size:22px;font-weight:700;line-height:1;letter-spacing:.02em;color:var(--navy);opacity:.55;pointer-events:none}
+.footer-grid>div>a:not(.brand){position:relative;width:fit-content}
+.footer-grid>div>a:not(.brand)::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:6px;background:var(--orange);mask:url('../img/wa/brush-stroke.svg') 0 0/100% 100% no-repeat;transform:scaleX(0);transform-origin:0 50%;transition:transform var(--dur-mid) var(--ease-out)}
+.footer-grid>div>a:not(.brand):hover::after,.footer-grid>div>a:not(.brand):focus-visible::after{transform:scaleX(1)}
+
+/* ---------- 3. chi tiết: sân khấu dính, obi, giá đỡ, okuzuke, washi ---------- */
+.detail-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:72px}
+/* sân khấu nằm trong lưới wrap, thẳng mép trái với breadcrumb và các khối dưới */
+.detail-stage{position:sticky;top:96px;height:min(640px,calc(100vh - 120px));display:grid;align-items:center;justify-items:start;padding-left:76px;border-radius:var(--radius-l);background:var(--surface-2)}
+.stage-tate{position:absolute;left:22px;top:40px;max-height:80%;overflow:hidden;font-size:30px;font-weight:700;line-height:1.05;color:var(--navy)}
+.stage-book{position:relative;isolation:isolate;display:grid;justify-items:center}
+.detail-cover{z-index:1;rotate:-2deg}
+.detail-cover .book-cover strong{margin-top:12px}
+.detail-obi{padding:12px 16px 14px}
+.detail-obi .obi-copy{font-size:13px}
+.detail-obi b{font-size:30px}
+.detail-hanko{position:absolute;top:-14px;left:-14px;z-index:3}
+.stage-easel{position:relative;z-index:2;width:340px;height:12px;margin-top:-6px;border-radius:var(--radius-pill);background:var(--board);box-shadow:0 5px 0 var(--board-depth)}
+.stage-easel::before,.stage-easel::after{content:'';position:absolute;top:8px;width:10px;height:96px;border-radius:var(--radius-pill);background:var(--board-depth);transform-origin:50% 0}
+.stage-easel::before{left:26%;rotate:16deg}
+.stage-easel::after{right:26%;rotate:-16deg}
+.detail-pop{position:absolute;right:12px;top:56px;z-index:3;width:156px;max-width:none}
+.stock-note{display:flex;flex-wrap:wrap;align-items:center;font-weight:600}
+.stock-note .preorder-eta{flex-basis:100%;font-weight:400}
+.detail-buy{position:relative}
+.detail-buy .cart-stamp{left:calc(96px + 16px + 30%);right:auto;top:-22px}
+.okuzuke{max-width:560px;margin:8px 0 40px;padding:20px 24px;border:5px double var(--navy)}
+.okuzuke-title{display:flex;align-items:baseline;gap:10px;margin:0 0 6px;font-size:18px}
+.okuzuke-title span{font-family:var(--font-jp);font-weight:700;color:var(--orange-ink)}
+.okuzuke .detail-facts{margin:0}
+.okuzuke .detail-facts :is(dt,dd){position:relative;border-bottom:0}
+.okuzuke .detail-facts :is(dt,dd)::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line);transform-origin:0 50%}
+.okuzuke .detail-facts :is(dt,dd):nth-of-type(2){--r:1}
+.okuzuke .detail-facts :is(dt,dd):nth-of-type(3){--r:2}
+.okuzuke .detail-facts :is(dt,dd):nth-of-type(4){--r:3}
+/* giới thiệu: tờ washi trải hết wrap, hai cột theo đúng lưới chi tiết (kanji + tiêu đề | lời giới thiệu) */
+.detail-story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 72px;align-items:start;margin:64px 0 0;padding:40px 48px 56px;overflow:clip;rotate:-.3deg}
+.story-head{position:relative;display:grid;align-content:start;min-height:190px}
+.story-head h2{position:relative;z-index:1;margin:0;font-size:clamp(26px,2.6vw,34px)}
+.story-body{position:relative;z-index:1}
+.story-body .rich-copy{max-width:60ch;margin-top:0;font-size:17px}
+.story-kanji{position:absolute;top:36px;left:-10px;font:700 180px/1 var(--font-jp);color:var(--surface-2);pointer-events:none}
+.wa-similar{padding-block:88px 24px}
+.similar-row{position:relative}
+.wa-similar .spines{grid-template-columns:300px minmax(0,1fr);gap:56px}
+.wa-similar .spine-stand{width:300px}
+/* kệ chạy hết bề rộng: sách cùng kệ, chặn sách, gấu, rồi phần còn lại của kệ là gáy trơn mờ (sách khác) */
+.wa-similar .spine-shelf{display:grid;grid-template-columns:auto 96px minmax(0,1fr);align-items:end}
+.wa-similar .spine-row{grid-column:1;grid-row:1;padding-right:0}
+.wa-similar .spine-peek{position:relative;grid-column:2;grid-row:1;right:auto;bottom:0;justify-self:center}
+.wa-similar .spine-shelf .board{grid-column:1/-1;grid-row:2}
+.spine-fill{grid-column:3;grid-row:1;display:flex;flex-wrap:wrap-reverse;align-items:flex-start;gap:400px 3px;height:250px;overflow:hidden}
+.spine-blank{flex:0 0 var(--bw);height:var(--bh);border-radius:3px 3px 1px 1px;background:color-mix(in srgb,var(--navy) 16%,var(--bg));box-shadow:inset -3px 0 0 color-mix(in srgb,var(--navy) 8%,transparent),inset 0 14px 0 -12px color-mix(in srgb,var(--navy) 30%,transparent)}
+.sb-a{--bw:48px;--bh:236px}.sb-b{--bw:58px;--bh:212px;background:color-mix(in srgb,var(--orange) 22%,var(--bg))}.sb-c{--bw:42px;--bh:248px}
+.sb-d{--bw:62px;--bh:200px;background:var(--surface-2)}.sb-e{--bw:52px;--bh:228px;background:color-mix(in srgb,var(--navy) 26%,var(--bg))}.sb-f{--bw:46px;--bh:242px;background:color-mix(in srgb,var(--orange) 14%,var(--bg))}
+.similar-pop{position:absolute;right:16px;top:20px;z-index:4;max-width:220px}
+.receipt .total-row b{white-space:nowrap}
+
+/* ---------- 4. tủ sách: chữ dọc 本棚, phiếu lọc washi, nhãn kệ ---------- */
+.catalog-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;padding-top:40px}
+.catalog-mark{display:flex;align-items:flex-end;gap:14px}
+.catalog-tate{font-size:60px;font-weight:700;line-height:1;color:var(--navy)}
+.hanko--count{display:inline-flex;flex-direction:column;justify-content:center;width:64px;height:64px;--hk:20px;font-family:var(--font-display);font-variant-numeric:tabular-nums}
+.hanko--count small{font:700 12px/1 var(--font-jp)}
+.filter-panel.washi{border:0;border-radius:0;background:none;padding:30px 24px 44px}
+.filter-desktop.washi{position:sticky;top:96px;rotate:-.8deg}
+.filter-mobile.washi{top:auto;padding:16px 16px 30px}
+.filter-mobile summary .hanko{margin-right:2px}
+.shelf-tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 20px;padding:0;border-bottom:4px solid var(--navy);scrollbar-width:none}
+.shelf-tabs::-webkit-scrollbar{display:none}
+.shelf-tabs a{flex-shrink:0;padding:8px 16px 6px;border-radius:var(--radius-s) var(--radius-s) 0 0;background:var(--surface-2);font-size:14px;font-weight:600;color:var(--ink);transition:translate 260ms var(--ease-spring),background-color var(--dur-fast)}
+.shelf-tabs a:hover{color:var(--ink);translate:0 4px}
+.shelf-tabs a[aria-current="true"]{background:var(--navy);color:var(--on-navy);translate:0 4px}
+.result-count b{font:700 22px/1 var(--font-display);color:var(--ink)}
+.catalog-layout>*{min-width:0}
+.catalog-layout .book-grid{gap:48px 28px}
+.page-arrow{position:relative;display:inline-flex;align-items:center;gap:10px;padding:8px 4px;font-weight:600;color:var(--navy)}
+.page-arrow::before,.page-arrow::after{content:'';width:34px;height:8px;background:var(--orange);mask:url('../img/wa/brush-stroke.svg') 0 0/100% 100% no-repeat;transition:translate 260ms var(--ease-spring)}
+.page-arrow.prev::after,.page-arrow.next::before{display:none}
+.page-arrow.prev:hover::before{translate:-6px 0}
+.page-arrow.next:hover::after{translate:6px 0}
+.page-now{display:inline-flex;align-items:center;gap:12px}
+.page-seal{width:36px;height:36px;--hk:16px;font-family:var(--font-display)}
+
+/* ---------- 5. giỏ: phiếu ghi sổ + hoá đơn ---------- */
+.cart-head .cart-tate{position:absolute;right:32px;top:40px;font-size:36px;font-weight:700;line-height:1;color:var(--navy)}
+.cart-list.ledger{display:block;padding:12px 28px 40px 76px}
+.ledger-head,.ledger .cart-row{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr) 108px 112px;gap:18px;align-items:center}
+.ledger-head{padding:10px 0;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.ledger-head span:first-child{grid-column:1/3}
+.ledger-head span:last-child{text-align:right}
+.ledger-head::before,.ledger .cart-row::before{content:'';position:absolute;top:0;bottom:0;left:-20px;width:1.5px;background:color-mix(in srgb,var(--orange) 55%,transparent)}
+.ledger .cart-row{padding:18px 0;border-radius:0;background:none;border-top:1px solid var(--line)}
+.ledger .cart-row>strong{text-align:right}
+.ledger .cart-thumb{rotate:-2deg;overflow:visible;transition:rotate 300ms var(--ease-spring),translate 300ms var(--ease-spring)}
+.ledger .cart-thumb>*{border-radius:4px;overflow:hidden}
+.ledger .cart-row:nth-of-type(odd) .cart-thumb{rotate:2deg}
+.ledger .cart-row:hover .cart-thumb{rotate:0deg;translate:0 -4px}
+.ledger .cart-stamp{right:-14px;top:-10px}
+.cart-empty .basket{position:relative;display:grid;place-items:end center;width:150px;height:118px;padding-bottom:6px}
+.cart-empty .basket::before{content:'';position:absolute;left:10px;right:10px;bottom:0;height:52px;z-index:1;border:2px solid var(--navy);border-top-width:4px;border-radius:2px 2px 14px 14px;background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.cart-empty .basket::after{content:'';position:absolute;left:32px;right:32px;bottom:40px;height:56px;border:2px solid var(--navy);border-bottom:0;border-radius:40px 40px 0 0}
+.cart-empty .basket .bear{position:relative;z-index:0;margin-bottom:22px}
+
+/* ---------- 6. checkout (chỉ trang trí, không hiệu ứng mới) ---------- */
+.step-num{width:38px;height:38px;background:var(--surface);color:var(--orange-ink);box-shadow:inset 0 0 0 2.5px var(--orange-ink);font:700 18px/1 var(--font-jp);transform:rotate(-8deg);mask:url('../img/wa/hanko-grain.svg') 0 0/72px}
+
+/* ---------- 7. đơn thành công, tra cứu ---------- */
+.order-code{display:inline-grid;grid-auto-flow:column;align-items:center;gap:10px;padding:10px 18px 10px 28px;border:2px solid var(--navy);border-radius:var(--radius-s);background:var(--surface);rotate:-1deg;
+  mask:radial-gradient(circle 5px at 0 50%,transparent 4.6px,var(--ink) 5px) 0 0/100% 14px repeat-y}
+.ticket-ja{display:inline-grid;place-items:center;padding:5px 6px;font:700 16px/1 var(--font-jp);color:var(--orange-ink);letter-spacing:.06em;box-shadow:inset 0 0 0 2px var(--orange-ink);border-radius:3px;rotate:-6deg}
+.inquiry-slip{border-top:2px dashed var(--line);border-radius:0 0 var(--radius-l) var(--radius-l);padding-top:26px}
+.inquiry-slip .slip-ja{margin-bottom:18px;font-size:12px}
+.seal-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:12px 0 4px}
+.seal{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--ink-soft)}
+.seal-row .hanko{width:38px;height:38px;--hk:18px}
+.seal-row .hanko--2{width:30px;height:48px;--hk:14px}
+
+/* ---------- 8. about: cửa tiệm có noren, ba tấm tranh cuộn ---------- */
+.wa-subhero{position:relative;overflow:clip;padding-block:132px 96px}
+.noren--about .noren-valance{grid-template-columns:repeat(3,1fr);width:min(420px,60%)}
+.subhero-side{display:flex;align-items:flex-end;gap:24px}
+.about-tate{height:280px;font-size:30px;font-weight:700;line-height:1;color:var(--navy)}
+.about-scrolls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;align-items:start;padding-block:96px 24px}
+.scroll-hang{padding-top:48px}
+.scroll-hang:nth-child(2){margin-top:64px}
+.scroll-hang:nth-child(3){margin-top:24px}
+.scroll-panel{padding:40px 28px 52px;transform-origin:50% -48px}
+.scroll-panel h2{font-size:24px;margin-bottom:10px}
+.scroll-panel p{margin:0;font-size:16px}
+.scroll-rod{position:absolute;left:-12px;right:-12px;top:-5px;z-index:1;height:10px;border-radius:var(--radius-pill);background:var(--board);box-shadow:0 3px 0 var(--board-depth)}
+.scroll-rod.is-bottom{top:auto;bottom:10px}
+.scroll-rod:not(.is-bottom)::before,.scroll-rod:not(.is-bottom)::after{content:'';position:absolute;bottom:100%;width:2px;height:44px;background:var(--navy)}
+.scroll-rod:not(.is-bottom)::before{left:30%;rotate:14deg;transform-origin:50% 100%}
+.scroll-rod:not(.is-bottom)::after{right:30%;rotate:-14deg;transform-origin:50% 100%}
+.scroll-num{width:52px;height:52px;--hk:24px;margin-bottom:14px}
+.about-cta{grid-column:1/-1;justify-self:center;margin-top:16px}
+
+/* ---------- 9. 404: kệ trống, một cuốn đổ, dấu 迷子 ---------- */
+.not-found.wa-404{max-width:640px;padding-top:72px}
+.lost-shelf{position:relative;display:flex;align-items:flex-end;gap:4px;width:520px;height:300px;padding:0 0 14px 40px;margin-bottom:28px}
+.lost-shelf .spine{--k:.8;pointer-events:none}
+.lost-shelf .board{position:absolute;left:0;right:0;bottom:0;z-index:3}
+.lost-fall{transform-origin:100% 100%;transform:rotate(90deg)}
+.lost-shelf .spine-peek{right:8px}
+.lost-seal{position:absolute;top:20px;right:120px;width:52px;height:88px;--hk:26px}
+
+/* ---------- 10. chính sách ---------- */
+.policy-num.hanko{width:40px;height:40px;border:0;--hk:18px;color:var(--orange-ink)}
+
+/* ---------- 11. chuyển động lượt B (công thức trong motion-recipes.md, bảng "Đợt wa") ---------- */
+@keyframes obi-wrap{from{opacity:0;transform:translateX(-28px) scaleX(.6)}to{opacity:1;transform:none}}
+@keyframes obi-scroll-slip{from{translate:0 0}to{translate:0 10px}}
+@keyframes story-unfold{from{opacity:0;transform:perspective(1200px) rotateX(-14deg) translateY(20px)}to{opacity:1;transform:none}}
+@keyframes slip-in{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+@keyframes receipt-print{from{transform:translateY(-42%)}to{transform:none}}
+@keyframes ticket-tear{from{opacity:0;transform:translateY(-14px) rotate(-4deg)}to{opacity:1;transform:none}}
+@keyframes book-tip{0%{transform:rotate(0deg)}70%{transform:rotate(90deg)}84%{transform:rotate(82deg)}100%{transform:rotate(90deg)}}
+@keyframes filter-sway{from{rotate:-1.4deg}to{rotate:-.2deg}}
+@keyframes kanji-drift-small{from{transform:translateY(40px)}to{transform:translateY(-40px)}}
+@keyframes kanji-drift-up{from{transform:none}to{transform:translateY(-60px)}}
+@keyframes kanji-drift-story{from{transform:translateY(30px)}to{transform:translateY(-90px)}}
+
+/* footer: dấu tiệm đóng khi vào khung */
+.motion-on .footer-seal[data-reveal]{opacity:1;transform:rotate(-8deg)}
+.motion-on .footer-seal[data-reveal]:not(.is-in){opacity:0}
+.motion-on .footer-seal.is-in{animation:hanko-stamp 380ms var(--ease-thud) 200ms both}
+
+/* chi tiết: obi quấn vào, dấu đóng xuống giá đỡ, POP đung đưa, vạch okuzuke, washi mở */
+.motion-on .detail-stage[data-reveal]{opacity:1;transform:none}
+.motion-on .detail-stage:not(.is-in) :is(.detail-obi,.detail-hanko .hanko,.detail-pop){opacity:0}
+.motion-on .detail-stage.is-in .detail-obi{transform-origin:0 50%;animation:obi-wrap 520ms var(--ease-out) 380ms backwards}
+.motion-on .detail-stage.is-in .detail-hanko .hanko{animation:hanko-stamp 380ms var(--ease-thud) 760ms both}
+.motion-on .detail-stage.is-in .stage-easel{animation:stamp-thud 160ms ease-out 960ms}
+.motion-on .detail-stage.is-in .detail-pop{animation:pop-sway 2.8s ease-in-out infinite alternate}
+.motion-on .detail-stage .detail-pop.is-swing{animation:pop-flick 900ms ease-out}
+.motion-on .detail-facts[data-reveal]{opacity:1;transform:none}
+.motion-on .detail-facts:not(.is-in) :is(dt,dd)::after{transform:scaleX(0)}
+.motion-on .detail-facts.is-in :is(dt,dd)::after{transition:transform 420ms var(--ease-out) calc(var(--r,0) * 70ms)}
+.motion-on .detail-story[data-reveal]{transform:none}
+.motion-on .detail-story[data-reveal]:not(.is-in){opacity:0}
+.motion-on .detail-story.is-in{transform-origin:50% 0;animation:story-unfold 640ms var(--ease-out) backwards}
+
+/* tủ sách: dấu số lượng đóng, phiếu lọc đung đưa nhẹ như giấy kẹp */
+.motion-on .hanko--count{animation:hanko-stamp 380ms var(--ease-thud) 500ms both}
+.motion-on .filter-desktop.washi{animation:filter-sway 4s ease-in-out infinite alternate}
+.motion-on .similar-pop{animation:pop-sway 3.2s ease-in-out -.8s infinite alternate}
+.motion-on .similar-pop.is-swing{animation:pop-flick 900ms ease-out}
+
+/* giỏ: dòng trượt vào sổ, dấu 入 đóng lên dòng vừa thêm, hoá đơn chạy ra từ khe */
+.motion-on .cart-row[data-reveal]{opacity:1;transform:none}
+.motion-on .cart-row[data-reveal]:not(.is-in){opacity:0}
+.motion-on .cart-row.is-in{animation:slip-in 420ms var(--ease-out) calc(var(--i,0) * 60ms) backwards}
+.motion-on .cart-row.is-in.is-stamped{animation:slip-in 420ms var(--ease-out) calc(var(--i,0) * 60ms) backwards,stamp-thud 160ms ease-out 220ms}
+.motion-on .cart-row.is-stamped .cart-stamp{animation:hanko-stamp 380ms var(--ease-thud) both}
+.motion-on .receipt[data-reveal]{opacity:1;transform:none}
+.motion-on .receipt[data-reveal]:not(.is-in){opacity:0}
+.motion-on .receipt[data-reveal].is-in{animation:receipt-print 680ms cubic-bezier(.3,.7,.2,1) backwards}
+.motion-on .receipt[data-reveal].is-in .total-row{animation:wa-fade 300ms var(--ease-out) backwards}
+.motion-on .receipt[data-reveal].is-in .total-row:nth-of-type(1){animation-delay:240ms}
+.motion-on .receipt[data-reveal].is-in .total-row:nth-of-type(2){animation-delay:320ms}
+.motion-on .receipt[data-reveal].is-in .total-row:nth-of-type(3){animation-delay:400ms}
+
+/* đơn, tra cứu: vé số xé ra, dấu thanh toán đóng so le */
+.motion-on [data-stagger].is-in .order-code{animation:ticket-tear 520ms var(--ease-spring) 600ms backwards}
+.motion-on .info-stack:not(.is-in) .seal-row .hanko{opacity:0}
+.motion-on .info-stack.is-in .seal-row .hanko{animation:hanko-stamp 380ms var(--ease-thud) 300ms both}
+.motion-on .info-stack.is-in .seal-row .seal:nth-child(2) .hanko{animation-delay:420ms}
+.motion-on .info-stack.is-in .seal-row .seal:nth-child(3) .hanko{animation-delay:540ms}
+
+/* about: tranh cuộn rơi xuống từ dây, lắc khi rê chuột, số đóng dấu */
+.motion-on .scroll-hang[data-reveal]{transform:none}
+.motion-on .scroll-hang[data-reveal]:not(.is-in),.motion-on .scroll-hang:not(.is-in) .scroll-num{opacity:0}
+.motion-on .scroll-hang.is-in{animation:sign-drop 820ms var(--ease-spring) calc(var(--i,0) * 120ms) backwards}
+.motion-on .scroll-hang.is-in .scroll-num{animation:hanko-stamp 380ms var(--ease-thud) calc(var(--i,0) * 120ms + 600ms) both}
+.motion-on .scroll-hang.is-swing>.scroll-panel{animation:sign-swing 1200ms ease-out}
+
+/* 404: cuốn sách đổ, gấu ló (wa.css), dấu 迷子 */
+.motion-on .lost-fall{animation:book-tip 900ms cubic-bezier(.5,0,.6,1) 500ms both}
+.motion-on .lost-seal{animation:hanko-stamp 380ms var(--ease-thud) 1300ms both}
+
+/* chính sách: số đóng dấu */
+.motion-on .policy-item:not(.is-in) .policy-num{opacity:0}
+.motion-on .policy-item.is-in .policy-num{animation:hanko-stamp 380ms var(--ease-thud) 300ms both}
+
+/* chữ dọc trôi lệch tốc độ, obi tuột dần khi đọc xuống (CSS scroll-timeline) */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .motion-on .footer-tate{animation:kanji-drift-small linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    .motion-on .catalog-tate{animation:kanji-drift-small linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+    .motion-on .about-tate{animation:kanji-drift-up linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+    .motion-on .story-kanji{animation:kanji-drift-story linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    .motion-on .detail-stage.is-in .detail-obi{animation:obi-wrap 520ms var(--ease-out) 380ms backwards,obi-scroll-slip linear both;animation-timeline:auto,scroll(root);animation-range:normal,0px 600px}
+  }
+}
+
+/* ---------- 12. màn hình hẹp ---------- */
+@media (max-width:1100px){
+  .detail-grid{gap:40px}
+  .detail-cover{width:240px;height:336px}
+  .stage-easel{width:280px}
+  .detail-pop{top:auto;bottom:20px;width:140px}
+  .detail-stage{padding-left:56px}
+  .stage-tate{left:12px;font-size:24px}
+}
+@media (max-width:767px){
+  .footer-paper{padding-top:44px}
+  .footer-grid,.footer-bottom{padding-right:56px}
+  .footer-tate{right:12px;top:36px;font-size:19px}
+  .detail-grid{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:16px}
+  .detail-stage{position:relative;top:auto;height:440px;margin-inline:-16px;padding-left:56px;border-radius:0}
+  .stage-tate{left:16px;top:20px;font-size:22px}
+  .detail-cover{width:220px;height:308px}
+  .detail-obi{padding:8px 10px 10px}
+  .detail-obi .obi-copy{font-size:11px}
+  .detail-obi b{font-size:22px}
+  .stage-easel{width:256px}
+  .stage-easel::before,.stage-easel::after{height:52px}
+  .detail-pop{top:16px;bottom:auto;right:12px;width:120px;font-size:16px}
+  .okuzuke{padding:16px;max-width:none}
+  .detail-story{grid-template-columns:minmax(0,1fr);margin-top:40px;padding:24px 20px 40px;rotate:0deg}
+  .story-head{min-height:0;padding:0}
+  .story-kanji{top:-8px;left:auto;right:-4px;font-size:120px}
+  .wa-similar{padding-block:64px 16px}
+  .similar-row,.wa-similar .spines{grid-template-columns:minmax(0,1fr);gap:24px}
+  .wa-similar .spine-stand{width:auto}
+  .wa-similar .spine-shelf{display:block}
+  .wa-similar .spine-row{padding-right:16px}
+  .wa-similar .spine-peek{position:absolute;right:8px}
+  .spine-fill{display:none}
+  .similar-pop{position:relative;right:auto;top:auto;width:fit-content;margin:24px 8px 0 auto}
+  .catalog-head{padding-top:40px;gap:12px}
+  .catalog-tate{font-size:36px}
+  .hanko--count{width:52px;height:52px;--hk:16px}
+  .filter-mobile.washi{margin-bottom:24px}
+  .shelf-tabs{margin-inline:-16px;padding-inline:16px}
+  .catalog-layout .book-grid{gap:32px 14px}
+  .cart-head>div{padding-right:56px}
+  .cart-head .cart-tate{right:16px;top:44px;font-size:26px}
+  .cart-list.ledger{padding:8px 16px 32px 34px}
+  .ledger-head{display:none}
+  .ledger .cart-row{grid-template-columns:56px minmax(0,1fr);row-gap:12px}
+  .ledger .cart-row>strong{text-align:left}
+  .ledger .cart-row::before{left:-14px}
+  .ledger .cart-stamp{right:-8px}
+  .receipt-slot{position:static}
+  .wa-subhero{padding-block:84px 56px}
+  .noren--about .noren-valance{width:calc(100% - 32px);height:64px}
+  .subhero .wrap{flex-direction:column;align-items:flex-start;gap:12px}
+  .subhero-side{order:-1}
+  .about-tate{height:auto;writing-mode:horizontal-tb;font-size:16px;letter-spacing:.1em}
+  .motion-on .about-tate{animation:none}
+  .about-scrolls{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:56px 16px}
+  .scroll-hang:nth-child(n){margin-top:0}
+  .not-found.wa-404{padding-top:40px}
+  .lost-shelf{zoom:.66}
+  .lost-shelf .spine-peek{top:auto;bottom:14px;right:8px}
+}

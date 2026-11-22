@@ -1,0 +1,180 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>ERD Hép Bookstore</title>
+<style>@page{size:A3 landscape;margin:12mm}body{font-family:Arial,"DejaVu Sans",sans-serif;color:#1f2547;font-size:10pt}
+h1{color:#2c3a7e;margin:0}p.sub{color:#4f5679;margin:2px 0 10px}h3{margin:14px 0 4px;color:#2c3a7e;page-break-after:avoid}h3 span{font-weight:400;color:#a8501a;font-size:10pt}
+table{border-collapse:collapse;width:100%;font-size:9pt;page-break-inside:avoid}td,th{border:1px solid #d9c9b2;padding:3px 6px;text-align:left}th{background:#f4ece0}
+.diagram{page-break-after:always;text-align:center}.diagram img{height:240mm;width:auto}.cols{columns:2;column-gap:18px}.cols>div{break-inside:avoid}</style></head><body>
+<h1>ERD Hép Bookstore</h1><p class="sub">Sinh tự động từ shop/models.py. 13 bảng, 17 quan hệ.</p>
+<div class="diagram"><pre class="mermaid">erDiagram
+  User {
+    int id PK
+    varchar username UK
+    varchar first_name
+    varchar email
+    bool is_staff
+    bool is_superuser
+    bool is_active
+  }
+  Category {
+    bigint id PK
+    varchar name_vi
+    varchar name_ja
+    varchar slug UK
+    text description
+    int sort_order
+  }
+  Supplier {
+    bigint id PK
+    varchar name
+    varchar contact_name
+    varchar phone
+    varchar email
+    varchar address
+    text note
+    bool active
+    datetime created_at
+  }
+  Book {
+    bigint id PK
+    bigint category_id FK
+    bigint supplier_id FK
+    varchar title_vi
+    varchar title_ja
+    varchar slug UK
+    varchar author_ja
+    varchar publisher
+    varchar isbn UK
+    text description_vi
+    int price
+    int cost_price
+    int stock
+    int min_stock
+    bool allow_preorder
+    smallint restock_days
+    varchar cover
+    bool featured
+    bool active
+    datetime created_at
+  }
+  Customer {
+    bigint id PK
+    bigint user_id FK
+    varchar full_name
+    varchar email
+    varchar phone
+    text address
+    text note
+    datetime created_at
+  }
+  Order {
+    bigint id PK
+    varchar order_code UK
+    bigint customer_id FK
+    varchar source
+    varchar status
+    varchar payment_method
+    varchar payment_status
+    varchar full_name
+    varchar phone
+    varchar email
+    text address
+    text note
+    int subtotal
+    int shipping_fee
+    int total
+    bigint created_by_id FK
+    bigint payment_confirmed_by_id FK
+    datetime paid_at
+    varchar paid_via
+    bool is_preorder
+    date expected_date
+    datetime created_at
+    datetime updated_at
+  }
+  OrderItem {
+    bigint id PK
+    bigint order_id FK
+    bigint book_id FK
+    varchar title_snapshot
+    varchar sku_snapshot
+    int quantity
+    int unit_price
+    int line_total
+    int preorder_qty
+  }
+  PaymentTransaction {
+    bigint id PK
+    bigint order_id FK
+    varchar provider
+    varchar provider_txn_id
+    varchar reference_code
+    varchar gateway
+    varchar account_number
+    bigint amount
+    text content
+    varchar status
+    json raw_payload
+    datetime transaction_at
+    datetime received_at
+    bigint resolved_by_id FK
+  }
+  StockMovement {
+    bigint id PK
+    bigint book_id FK
+    int delta
+    varchar reason
+    varchar reference
+    bigint actor_id FK
+    datetime created_at
+  }
+  PurchaseOrder {
+    bigint id PK
+    bigint supplier_id FK
+    varchar status
+    text note
+    bigint created_by_id FK
+    datetime created_at
+    datetime received_at
+  }
+  PurchaseItem {
+    bigint id PK
+    bigint purchase_id FK
+    bigint book_id FK
+    int quantity
+    int unit_cost
+  }
+  StaffProfile {
+    bigint id PK
+    bigint user_id FK
+    varchar role
+    varchar phone
+    datetime created_at
+  }
+  ContactMessage {
+    bigint id PK
+    varchar full_name
+    varchar email
+    varchar subject
+    text message
+    datetime created_at
+  }
+  Category ||--o{ Book : &quot;category&quot;
+  Supplier |o--o{ Book : &quot;supplier&quot;
+  User |o--o| Customer : &quot;user&quot;
+  Customer |o--o{ Order : &quot;customer&quot;
+  User |o--o{ Order : &quot;created_by&quot;
+  User |o--o{ Order : &quot;payment_confirmed_by&quot;
+  Order ||--o{ OrderItem : &quot;order&quot;
+  Book ||--o{ OrderItem : &quot;book&quot;
+  Order |o--o{ PaymentTransaction : &quot;order&quot;
+  User |o--o{ PaymentTransaction : &quot;resolved_by&quot;
+  Book ||--o{ StockMovement : &quot;book&quot;
+  User |o--o{ StockMovement : &quot;actor&quot;
+  Supplier ||--o{ PurchaseOrder : &quot;supplier&quot;
+  User |o--o{ PurchaseOrder : &quot;created_by&quot;
+  PurchaseOrder ||--o{ PurchaseItem : &quot;purchase&quot;
+  Book ||--o{ PurchaseItem : &quot;book&quot;
+  User ||--o| StaffProfile : &quot;user&quot;</pre></div>
+<div class="cols"><div><h3>User <span>Tài khoản đăng nhập (Django auth)</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>int</td><td>PK</td><td>ID</td></tr><tr><td>username</td><td>varchar</td><td>UK</td><td>Tên đăng nhập</td></tr><tr><td>first_name</td><td>varchar</td><td></td><td>Tên</td></tr><tr><td>email</td><td>varchar</td><td></td><td>địa chỉ email</td></tr><tr><td>is_staff</td><td>bool</td><td></td><td>tình trạng nhân viên</td></tr><tr><td>is_superuser</td><td>bool</td><td></td><td>trạng thái superuser</td></tr><tr><td>is_active</td><td>bool</td><td></td><td>Kích hoạt</td></tr></table></div><div><h3>Category <span>Danh mục sách</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>name_vi</td><td>varchar</td><td></td><td>Tên danh mục</td></tr><tr><td>name_ja</td><td>varchar</td><td></td><td>Tên tiếng Nhật</td></tr><tr><td>slug</td><td>varchar</td><td>UK</td><td></td></tr><tr><td>description</td><td>text</td><td></td><td></td></tr><tr><td>sort_order</td><td>int</td><td></td><td></td></tr></table></div><div><h3>Supplier <span>Nhà cung cấp</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>name</td><td>varchar</td><td></td><td>Tên nguồn cung</td></tr><tr><td>contact_name</td><td>varchar</td><td></td><td></td></tr><tr><td>phone</td><td>varchar</td><td></td><td></td></tr><tr><td>email</td><td>varchar</td><td></td><td></td></tr><tr><td>address</td><td>varchar</td><td></td><td></td></tr><tr><td>note</td><td>text</td><td></td><td></td></tr><tr><td>active</td><td>bool</td><td></td><td></td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>Book <span>Sách</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>category_id</td><td>bigint</td><td>FK</td><td>tham chiếu Category</td></tr><tr><td>supplier_id</td><td>bigint</td><td>FK</td><td>tham chiếu Supplier, có thể rỗng</td></tr><tr><td>title_vi</td><td>varchar</td><td></td><td>Tên sách tiếng Việt</td></tr><tr><td>title_ja</td><td>varchar</td><td></td><td>Tên tiếng Nhật</td></tr><tr><td>slug</td><td>varchar</td><td>UK</td><td></td></tr><tr><td>author_ja</td><td>varchar</td><td></td><td>Tác giả</td></tr><tr><td>publisher</td><td>varchar</td><td></td><td></td></tr><tr><td>isbn</td><td>varchar</td><td>UK</td><td>ISBN / SKU</td></tr><tr><td>description_vi</td><td>text</td><td></td><td>Mô tả</td></tr><tr><td>price</td><td>int</td><td></td><td>Giá (VNĐ)</td></tr><tr><td>cost_price</td><td>int</td><td></td><td>Giá nhập (VNĐ)</td></tr><tr><td>stock</td><td>int</td><td></td><td>Tồn kho</td></tr><tr><td>min_stock</td><td>int</td><td></td><td>Ngưỡng cảnh báo</td></tr><tr><td>allow_preorder</td><td>bool</td><td></td><td>Nhận đặt trước khi hết hàng</td></tr><tr><td>restock_days</td><td>smallint</td><td></td><td>Số ngày dự kiến có hàng</td></tr><tr><td>cover</td><td>varchar</td><td></td><td>Tên ảnh trong static/img</td></tr><tr><td>featured</td><td>bool</td><td></td><td></td></tr><tr><td>active</td><td>bool</td><td></td><td></td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>Customer <span>Khách hàng</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>user_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr><tr><td>full_name</td><td>varchar</td><td></td><td></td></tr><tr><td>email</td><td>varchar</td><td></td><td></td></tr><tr><td>phone</td><td>varchar</td><td></td><td></td></tr><tr><td>address</td><td>text</td><td></td><td></td></tr><tr><td>note</td><td>text</td><td></td><td></td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>Order <span>Đơn hàng (web, Facebook, Instagram, POS)</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>order_code</td><td>varchar</td><td>UK</td><td></td></tr><tr><td>customer_id</td><td>bigint</td><td>FK</td><td>tham chiếu Customer, có thể rỗng</td></tr><tr><td>source</td><td>varchar</td><td></td><td>web, facebook, instagram, pos</td></tr><tr><td>status</td><td>varchar</td><td></td><td>new, confirmed, packing, shipped, completed, cancelled</td></tr><tr><td>payment_method</td><td>varchar</td><td></td><td>bank, cod, cash</td></tr><tr><td>payment_status</td><td>varchar</td><td></td><td>unpaid, paid, refunded</td></tr><tr><td>full_name</td><td>varchar</td><td></td><td></td></tr><tr><td>phone</td><td>varchar</td><td></td><td></td></tr><tr><td>email</td><td>varchar</td><td></td><td></td></tr><tr><td>address</td><td>text</td><td></td><td></td></tr><tr><td>note</td><td>text</td><td></td><td></td></tr><tr><td>subtotal</td><td>int</td><td></td><td></td></tr><tr><td>shipping_fee</td><td>int</td><td></td><td></td></tr><tr><td>total</td><td>int</td><td></td><td></td></tr><tr><td>created_by_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr><tr><td>payment_confirmed_by_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr><tr><td>paid_at</td><td>datetime</td><td></td><td></td></tr><tr><td>paid_via</td><td>varchar</td><td></td><td>Cách xác nhận thu tiền; manual, sepay, pos_cash</td></tr><tr><td>is_preorder</td><td>bool</td><td></td><td>Đơn đặt trước</td></tr><tr><td>expected_date</td><td>date</td><td></td><td>Ngày dự kiến có hàng</td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr><tr><td>updated_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>OrderItem <span>Dòng đơn</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>order_id</td><td>bigint</td><td>FK</td><td>tham chiếu Order</td></tr><tr><td>book_id</td><td>bigint</td><td>FK</td><td>tham chiếu Book</td></tr><tr><td>title_snapshot</td><td>varchar</td><td></td><td></td></tr><tr><td>sku_snapshot</td><td>varchar</td><td></td><td></td></tr><tr><td>quantity</td><td>int</td><td></td><td></td></tr><tr><td>unit_price</td><td>int</td><td></td><td></td></tr><tr><td>line_total</td><td>int</td><td></td><td></td></tr><tr><td>preorder_qty</td><td>int</td><td></td><td>Số cuốn chờ hàng về</td></tr></table></div><div><h3>PaymentTransaction <span>Giao dịch tiền vào (SePay)</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>order_id</td><td>bigint</td><td>FK</td><td>tham chiếu Order, có thể rỗng</td></tr><tr><td>provider</td><td>varchar</td><td></td><td>sepay</td></tr><tr><td>provider_txn_id</td><td>varchar</td><td></td><td>Mã giao dịch SePay</td></tr><tr><td>reference_code</td><td>varchar</td><td></td><td>Mã tham chiếu ngân hàng</td></tr><tr><td>gateway</td><td>varchar</td><td></td><td>Ngân hàng</td></tr><tr><td>account_number</td><td>varchar</td><td></td><td></td></tr><tr><td>amount</td><td>bigint</td><td></td><td>Số tiền</td></tr><tr><td>content</td><td>text</td><td></td><td>Nội dung chuyển khoản</td></tr><tr><td>status</td><td>varchar</td><td></td><td>matched, unmatched, amount_mismatch, duplicate_paid, multiple_orders</td></tr><tr><td>raw_payload</td><td>json</td><td></td><td></td></tr><tr><td>transaction_at</td><td>datetime</td><td></td><td>Thời điểm ngân hàng ghi nhận</td></tr><tr><td>received_at</td><td>datetime</td><td></td><td></td></tr><tr><td>resolved_by_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr></table></div><div><h3>StockMovement <span>Nhật ký biến động kho</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>book_id</td><td>bigint</td><td>FK</td><td>tham chiếu Book</td></tr><tr><td>delta</td><td>int</td><td></td><td></td></tr><tr><td>reason</td><td>varchar</td><td></td><td></td></tr><tr><td>reference</td><td>varchar</td><td></td><td></td></tr><tr><td>actor_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>PurchaseOrder <span>Phiếu nhập hàng</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>supplier_id</td><td>bigint</td><td>FK</td><td>tham chiếu Supplier</td></tr><tr><td>status</td><td>varchar</td><td></td><td>draft, received</td></tr><tr><td>note</td><td>text</td><td></td><td></td></tr><tr><td>created_by_id</td><td>bigint</td><td>FK</td><td>tham chiếu User, có thể rỗng</td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr><tr><td>received_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>PurchaseItem <span>Dòng phiếu nhập</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>purchase_id</td><td>bigint</td><td>FK</td><td>tham chiếu PurchaseOrder</td></tr><tr><td>book_id</td><td>bigint</td><td>FK</td><td>tham chiếu Book</td></tr><tr><td>quantity</td><td>int</td><td></td><td></td></tr><tr><td>unit_cost</td><td>int</td><td></td><td></td></tr></table></div><div><h3>StaffProfile <span>Hồ sơ nhân viên, vai trò</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>user_id</td><td>bigint</td><td>FK</td><td>tham chiếu User</td></tr><tr><td>role</td><td>varchar</td><td></td><td>Vai trò; manager, sales, warehouse</td></tr><tr><td>phone</td><td>varchar</td><td></td><td></td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div><div><h3>ContactMessage <span>Lời nhắn liên hệ</span></h3><table><tr><th>Trường</th><th>Kiểu</th><th>Khoá</th><th>Ghi chú</th></tr><tr><td>id</td><td>bigint</td><td>PK</td><td>ID</td></tr><tr><td>full_name</td><td>varchar</td><td></td><td></td></tr><tr><td>email</td><td>varchar</td><td></td><td></td></tr><tr><td>subject</td><td>varchar</td><td></td><td></td></tr><tr><td>message</td><td>text</td><td></td><td></td></tr><tr><td>created_at</td><td>datetime</td><td></td><td></td></tr></table></div></div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:"base",er:{useMaxWidth:true},themeVariables:{primaryColor:"#f4ece0",primaryBorderColor:"#2c3a7e",lineColor:"#2c3a7e",primaryTextColor:"#1f2547",fontFamily:"Arial"}});</script>
+</body></html>

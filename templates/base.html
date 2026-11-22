@@ -1,20 +1,42 @@
 {% load static shop_extras %}<!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}Hép Store{% endblock %} · Sách và cảm hứng Nhật Bản</title>
-<meta name="description" content="Hép Store — không gian đọc sách, học tiếng Nhật và khám phá văn hóa Nhật Bản dành cho độc giả Việt.">
+<title>{% block title %}Hép Bookstore{% endblock %} · Hép Bookstore</title>
+<meta name="description" content="Hép Bookstore, tiệm sách Việt - Nhật nhỏ: văn học, sách học tiếng Nhật và sách sống chậm cho bạn đọc Việt yêu Nhật.">
+<meta name="theme-color" content="#f4ece0">
+<script>(function(r){var m=matchMedia('(prefers-reduced-motion: reduce)').matches;r.classList.add(m?'motion-off':'motion-on');if(!m&&location.pathname==='/'){try{if(!sessionStorage.getItem('hep-noren'))r.classList.add('wa-noren')}catch(e){}}if(!m)setTimeout(function(){if(!r.classList.contains('motion-ready')){r.classList.remove('motion-on','wa-noren');r.classList.add('motion-off')}},2500)})(document.documentElement)</script>
+<link rel="icon" type="image/svg+xml" href="{% static 'img/brand/hep-bear.svg' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=Zen+Maru+Gothic:wght@500;700&family=Patrick+Hand&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
+<link rel="stylesheet" href="{% static 'css/motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/wa.css' %}">
+<link rel="stylesheet" href="{% static 'css/wa-pages.css' %}">
 {% block head %}{% endblock %}</head><body>
-<div class="topline">HÉP STORE · 日本の本と文化 <span>Miễn phí giao hàng từ 350.000₫ · Website mẫu học tập</span></div>
+<a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
+{% with current=request.resolver_match.url_name %}
 <header class="site-header"><div class="wrap header-layout">
-<a href="{% url 'home' %}" class="brand"><span class="brand-mark">へ</span><span><strong>Hép Store</strong><small>ĐỌC SÁCH · HIỂU NHẬT BẢN</small></span></a>
-<nav class="main-nav"><a href="{% url 'catalog' %}">Khám phá sách</a><a href="{% url 'about' %}">Câu chuyện Hép</a><a href="{% url 'track_order' %}">Tra cứu đơn</a><a href="{% url 'contact' %}">Liên hệ</a></nav>
-<div class="header-actions"><a class="mini-link" href="{% url 'cart' %}">Giỏ hàng <span class="count">{{ cart_count }}</span></a>
-{% if user.is_authenticated %}<a class="mini-link" href="{% url 'account' %}">Tài khoản</a>{% if user.is_staff %}<a class="mini-link admin-link" href="{% url 'dashboard' %}">Quản trị ↗</a>{% endif %}<form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="text-btn">Thoát</button></form>
-{% else %}<a class="mini-link" href="{% url 'login' %}">Đăng nhập</a>{% endif %}</div></div></header>
-{% if messages %}<div class="wrap notifications">{% for message in messages %}<div class="notice {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-<main>{% block content %}{% endblock %}</main>
-<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand" href="{% url 'home' %}"><span class="brand-mark">へ</span><span><strong>Hép Store</strong><small>ĐỌC SÁCH · HIỂU NHẬT BẢN</small></span></a><p>Một góc đọc nhẹ nhàng cho những tâm hồn yêu văn hóa Nhật. Sản phẩm và thông tin mẫu cần được thay bằng thông tin kinh doanh thật trước khi công bố.</p></div>
-<div><h4>Khám phá</h4><a href="{% url 'catalog' %}">Tủ sách Việt–Nhật</a><a href="{% url 'about' %}">Về Hép Store</a><a href="{% url 'contact' %}">Liên hệ</a></div>
+<a href="{% url 'home' %}" class="brand" aria-label="Hép Bookstore, về trang chủ">{% include 'shop/_bear.html' with size=40 %}<span class="brand-word">hép bookstore</span></a>
+{% if on_admin_host %}<div class="header-actions"><span class="admin-host-tag">Khu quản trị</span>{% if user.is_authenticated %}<span class="mini-link"><i class="ph ph-user-circle" aria-hidden="true"></i><span class="hdr-label">{{ user.get_username }}</span></span><form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="text-btn" aria-label="Thoát"><i class="ph ph-sign-out" aria-hidden="true"></i><span class="hdr-label">Thoát</span></button></form>{% endif %}</div>{% else %}<nav class="main-nav" aria-label="Điều hướng chính">
+<a href="{% url 'catalog' %}"{% if current == 'catalog' or current == 'book_detail' %} aria-current="page"{% endif %}>Khám phá sách</a>
+<a href="{% url 'about' %}"{% if current == 'about' %} aria-current="page"{% endif %}>Câu chuyện Hép</a>
+<a href="{% url 'track_order' %}"{% if current == 'track_order' %} aria-current="page"{% endif %}>Tra cứu đơn</a>
+<a href="{% url 'contact' %}"{% if current == 'contact' %} aria-current="page"{% endif %}>Liên hệ</a>
+</nav>
+<div class="header-actions">
+<a class="mini-link cart-link" href="{% url 'cart' %}"{% if current == 'cart' %} aria-current="page"{% endif %}><i class="ph ph-tote" aria-hidden="true"></i><span class="hdr-label">Giỏ hàng</span> <span class="count" aria-label="{{ cart_count }} cuốn trong giỏ">{{ cart_count }}</span></a>
+{% if user.is_authenticated %}<a class="mini-link" href="{% url 'account' %}" aria-label="Tài khoản"><i class="ph ph-user-circle" aria-hidden="true"></i><span class="hdr-label">Tài khoản</span></a>{% if user.is_staff %}<a class="btn btn-ghost btn-sm admin-link" href="{% url 'dashboard' %}" aria-label="Quản trị"><i class="ph ph-squares-four" aria-hidden="true"></i><span class="hdr-label">Quản trị</span></a>{% endif %}<form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button class="text-btn" aria-label="Thoát"><i class="ph ph-sign-out" aria-hidden="true"></i><span class="hdr-label">Thoát</span></button></form>
+{% else %}<a class="mini-link" href="{% url 'login' %}" aria-label="Đăng nhập"><i class="ph ph-user-circle" aria-hidden="true"></i><span class="hdr-label">Đăng nhập</span></a>{% endif %}</div>{% endif %}</div>
+{% block header_extra %}{% endblock %}</header>
+{% endwith %}
+{% if messages %}<div class="wrap notifications">{% for message in messages %}<div class="notice {{ message.tags }}" role="status"><i class="ph {% if message.tags == 'success' %}ph-check-circle{% elif message.tags == 'info' %}ph-info{% else %}ph-warning-circle{% endif %}" aria-hidden="true"></i><span>{{ message }}</span></div>{% endfor %}</div>{% endif %}
+<main id="main" tabindex="-1">{% block content %}{% endblock %}</main>
+{% if not on_admin_host %}<footer class="site-footer"><div class="wa-wave footer-wave" data-reveal aria-hidden="true"></div><div class="footer-paper"><div class="wrap footer-grid"><div class="footer-brand"><div class="footer-sign"><a class="brand" href="{% url 'home' %}">{% include 'shop/_bear.html' with size=56 %}<span class="brand-word">hép bookstore</span></a><span class="hanko hanko--2 hanko--line footer-seal" lang="ja" aria-hidden="true" data-reveal>ヘプ</span></div><p>Một tiệm sách nhỏ cho người yêu chữ Nhật và những trang đọc chậm. Sách và thông tin trên trang là dữ liệu mẫu, cần thay bằng thông tin kinh doanh thật trước khi mở bán.</p></div>
+<div><h4>Khám phá</h4><a href="{% url 'catalog' %}">Tủ sách Việt - Nhật</a><a href="{% url 'about' %}">Về Hép Bookstore</a><a href="{% url 'public_scan' %}">Quét mã xem giá</a><a href="{% url 'contact' %}">Liên hệ</a></div>
 <div><h4>Hỗ trợ</h4><a href="{% url 'policies' %}">Chính sách mua hàng</a><a href="{% url 'track_order' %}">Theo dõi đơn hàng</a><a href="{% url 'cart' %}">Giỏ hàng</a></div>
-<div><h4>Minh bạch</h4><p>Giá hiển thị bằng VNĐ. Thanh toán chuyển khoản cần được xác nhận thủ công. Không tự suy đoán khách đã chuyển tiền khi mã QR xuất hiện.</p></div></div><div class="wrap footer-bottom">© Hép Store · Website demo Django · Giao diện lấy cảm hứng từ tinh thần tối giản Nhật Bản.</div></footer>
+<div><h4>Minh bạch</h4><p>Giá hiển thị bằng VNĐ. Quét QR chuyển khoản là đủ, không cần tài khoản. Đơn tự chuyển sang đã thanh toán khi ngân hàng báo tiền về.</p></div></div><span class="tate footer-tate" lang="ja" aria-hidden="true">本とくま、またね。</span><div class="wrap footer-bottom"><span>© Hép Bookstore · Miễn phí giao hàng từ 350.000₫</span><span>Website demo Django</span></div></div></footer>{% endif %}
+<script defer src="{% static 'js/motion.js' %}"></script>
+<script defer src="{% static 'js/motion-shop.js' %}"></script>
+<script defer src="{% static 'js/wa.js' %}"></script>
 <script defer src="{% static 'js/site.js' %}"></script>{% block scripts %}{% endblock %}</body></html>

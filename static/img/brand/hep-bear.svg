@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Hép Bookstore</title>
+  <g fill="#e8dcc9" stroke="#2c3a7e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="14" cy="17" r="8"/>
+    <circle cx="50" cy="17" r="8"/>
+    <circle cx="32" cy="36" r="22"/>
+  </g>
+  <g fill="none" stroke="#2c3a7e" stroke-width="2.5" stroke-linecap="round">
+    <path d="M21 32q3 3 6 0"/>
+    <path d="M37 32q3 3 6 0"/>
+    <path d="M32 44q-1.5 3-4.5 2"/>
+    <path d="M32 44q1.5 3 4.5 2"/>
+  </g>
+  <ellipse cx="32" cy="41" rx="4" ry="3" fill="#2c3a7e"/>
+</svg>

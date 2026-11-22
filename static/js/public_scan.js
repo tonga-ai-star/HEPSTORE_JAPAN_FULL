@@ -132,7 +132,7 @@
     const code = input.value.trim();
     if (!validCode(code)) {
       event.preventDefault();
-      report('ISBN/SKU không hợp lệ. Chỉ dùng chữ, số, gạch nối, dấu chấm (3–30 ký tự).', true);
+      report('ISBN/SKU không hợp lệ. Chỉ dùng chữ, số, gạch nối, dấu chấm (3 đến 30 ký tự).', true);
       input.focus();
       return;
     }

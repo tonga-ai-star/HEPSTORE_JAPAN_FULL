@@ -11,6 +11,8 @@ import venv
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 os.chdir(ROOT)
+# Local demo via runserver needs DEBUG to serve static files; .env or the shell may override.
+os.environ.setdefault('HEPSTORE_DEBUG','1')
 
 def run(args,**kwargs):
     print('▶',' '.join(map(str,args)),flush=True)
@@ -55,8 +57,11 @@ def main():
         print('Mật khẩu một lần:',out.split('ADMIN_CREATED:',1)[1])
         print('LƯU NGAY MẬT KHẨU NÀY; sau lần đầu sẽ không hiển thị lại.\n'+'='*65+'\n')
     if args.no_run:return
-    print('\nHÉP STORE đang chạy trên http://127.0.0.1:'+str(args.port))
-    print('Quản trị: http://127.0.0.1:'+str(args.port)+'/management/')
+    shop_host=os.environ.get('HEPSTORE_SHOP_HOST','shop.localhost');admin_host=os.environ.get('HEPSTORE_ADMIN_HOST','quantri.localhost')
+    print('\nHÉP BOOKSTORE đang chạy')
+    print('  Link bán hàng : http://'+shop_host+':'+str(args.port)+'/')
+    print('  Link quản trị : http://'+admin_host+':'+str(args.port)+'/  (cần tài khoản nhân viên)')
+    print('  Webhook SePay : http://<tunnel>/api/sepay/webhook/')
     print('Nhấn CTRL+C để dừng. Không dùng chế độ này để vận hành website công khai.\n',flush=True)
     try:run([executable,'manage.py','runserver',f'127.0.0.1:{args.port}'])
     except KeyboardInterrupt:pass

@@ -1,5 +1,10 @@
 # HÉP STORE · Website bán sách Việt–Nhật và quản trị đa kênh
 
+## Mới cập nhật
+
+- Thanh toán QR tự động qua SePay, 2 link (bán hàng, quản trị), phân quyền nhân viên: xem `docs/HUONG_DAN_THANH_TOAN_VA_2_LINK.md`.
+- ERD sinh từ `shop/models.py`: `docs/ERD_Hep_Bookstore.pdf` (chạy lại `python3 docs/gen_erd.py`).
+
 ## Đọc trước
 
 Đây là **source Django mới dựng lại theo nghiệp vụ Hép Store**, không phải bản merge tự động vào mã nguồn ZIP gốc (source ZIP không được cung cấp ở lượt yêu cầu này). Website demo; cần kiểm thử và bổ sung điều khoản, dữ liệu nguồn cung, hạ tầng và pháp lý trước khi vận hành thật.
