@@ -126,6 +126,8 @@ DFD1 = '''flowchart TB
   P6 <--> D3
   QL -- "Nhân viên, vai trò" --> P7
   P7 <--> D7
+  D8 -- "Lời nhắn khách" --> P7
+  P7 -- "Lời nhắn (trang /admin/)" --> QL
   D2 -- "Đơn, doanh thu" --> P8
   P8 -- "Báo cáo, CSV" --> QL''' + STYLE
 
@@ -156,17 +158,17 @@ DFD2 = '''flowchart LR
   SP -- "Webhook (Authorization: Apikey)" --> P31
   P31 -- "Lưu giao dịch" --> D4
   D2 -- "Đơn chờ theo mã, số tiền" --> P31
-  P31 -- "Khớp: đã thanh toán" --> D2
-  P31 -- "Không khớp: chờ xử lý" --> NV
-  D2 -- "Trạng thái đơn (hỏi mỗi vài giây)" --> P14
+  P31 -- "Đúng mã đơn và đủ số tiền:<br/>đã thanh toán, xác nhận đơn" --> D2
+  P31 -- "Sai số tiền, không thấy mã,<br/>trùng đơn: chờ nhân viên xử lý" --> NV
+  D2 -- "Trạng thái đơn (trang QR hỏi lại mỗi 4 giây)" --> P14
   P14 -- "Thanh toán thành công<br/>hoặc đơn đã hủy" --> KH
-  D2 -- "Đơn chưa trả tiền quá 3 ngày" --> P21
+  D2 -- "Đơn web chưa xác nhận, chưa trả tiền<br/>quá 3 ngày, không có giao dịch kèm" --> P21
   P21 -- "Hủy đơn" --> D2
   P21 -- "Trả sách về kho" --> D1''' + STYLE
 
 ARCH = '''flowchart TB
   subgraph U["Người dùng"]
-    B1["Trình duyệt khách<br/>(máy tính, điện thoại)"]
+    B1["Trình duyệt khách<br/>(máy tính, điện thoại, camera quét mã)"]
     B2["Trình duyệt nhân viên<br/>+ camera / máy quét mã vạch"]
   end
   subgraph EXT["Dịch vụ ngoài"]
@@ -181,8 +183,9 @@ ARCH = '''flowchart TB
     H1["shop.localhost:8000<br/>Trang khách"]
     H2["quantri.localhost:8000<br/>Trang quản trị"]
     subgraph MW["Middleware"]
+      M0["Security, Session"]
       M1["HostSplitMiddleware<br/>tách 2 link, chặn tunnel"]
-      M2["CSRF, Session, Auth"]
+      M2["CSRF, Auth"]
       M3["RoleAccessMiddleware<br/>quản lý / bán hàng / kho"]
     end
     subgraph V["Views (shop/)"]
@@ -191,6 +194,8 @@ ARCH = '''flowchart TB
       V3["scan_views.py<br/>quét mã xem giá"]
       V4["staff_views.py<br/>nhân viên"]
     end
+    PAY["payments.py<br/>kiểm khoá, khớp mã đơn và số tiền"]
+    ADM["Django admin /admin/<br/>dữ liệu gốc, lời nhắn liên hệ"]
     SVC["services.py<br/>tạo đơn, đặt trước, kho,<br/>đánh dấu đã trả, hoàn tiền"]
     ORM["Django ORM<br/>models.py (13 bảng)"]
     TPL["Templates + static<br/>CSS wa, JS, three.js r170"]
@@ -200,28 +205,30 @@ ARCH = '''flowchart TB
   end
   B1 --> H1
   B2 --> H2
-  H1 --> M1
-  H2 --> M1
-  M1 --> M2 --> M3 --> V
+  H1 --> M0
+  H2 --> M0
+  M0 --> M1 --> M2 --> M3 --> V
   V --> SVC --> ORM --> DB
+  V2 --> PAY --> SVC
+  ADM --> ORM
   V --> TPL
   CMD --> SVC
   ENV -.-> V2
   B1 -. "tải ảnh QR" .-> VQR
   B1 -. "chuyển khoản" .-> BANK
   BANK --> SEPAY
-  SEPAY -- "POST webhook" --> NG --> M1
+  SEPAY -- "POST webhook" --> NG --> M0
   B1 -. "font, icon" .-> CDN
   B2 -. "font, icon" .-> CDN
   classDef default fill:#f4ece0,stroke:#2c3a7e,color:#1f2547
   classDef hot fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
-  class SVC,M1,M3,V2 hot'''
+  class SVC,M1,M3,V2,PAY hot'''
 
 DIAGRAMS = [
     ('BFD', 'Sơ đồ phân rã chức năng (BFD)', None,
      '8 nhóm chức năng chính, mỗi nhóm tách thành các chức năng con. Nhóm 1 dành cho khách; nhóm 2 đến 8 '
-     'nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả, '
-     'riêng 3.4, 2.6 hoàn tiền, 7 và 8 chỉ quản lý).'),
+     'nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả). '
+     'Riêng 2.6 hoàn tiền, 3.4 xác nhận tiền thủ công, nhóm 7 và 8.2 đến 8.5 chỉ quản lý; 8.1 tổng quan ai cũng xem.'),
     ('DFD_muc_ngu_canh', 'DFD mức ngữ cảnh (mức 0)', DFD0,
      'Toàn bộ hệ thống là một tiến trình. 5 tác nhân ngoài trao đổi dữ liệu với hệ thống. Khách chuyển '
      'khoản trực tiếp cho ngân hàng (nét đứt), hệ thống chỉ biết tiền vào qua webhook của SePay.'),
@@ -231,7 +238,8 @@ DIAGRAMS = [
      'PurchaseOrder, PurchaseItem; D7 User, StaffProfile; D8 ContactMessage.'),
     ('DFD_muc_2_dat_hang_thanh_toan', 'DFD mức dưới đỉnh (mức 2): đặt hàng và thanh toán QR', DFD2,
      'Phân rã luồng quan trọng nhất: khách đặt hàng, trả tiền bằng QR, đơn tự chuyển sang đã thanh toán. '
-     'Đơn chuyển khoản không trả tiền sau 3 ngày bị hủy và trả sách về kho.'),
+     'Đơn web còn ở trạng thái mới, chưa trả tiền quá 3 ngày (đơn đặt trước: 3 ngày sau ngày dự kiến có hàng) '
+     'thì tự hủy và trả sách về kho; đơn đã có giao dịch chuyển khoản liên quan thì để nhân viên xử lý, không tự hủy.'),
     ('Kien_truc_he_thong', 'Kiến trúc hệ thống (System Architecture)', ARCH,
      'Ứng dụng Django một khối chạy trên máy cửa hàng, không thuê hosting. Hai tên miền trên cùng một '
      'server được tách bằng middleware. Chỉ đường dẫn webhook được mở ra Internet qua ngrok để SePay gọi vào. '

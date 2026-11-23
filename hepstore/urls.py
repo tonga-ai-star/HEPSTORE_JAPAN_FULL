@@ -5,6 +5,6 @@ urlpatterns = [
  path('tai-khoan/', include('django.contrib.auth.urls')),
  path('', include('shop.urls')),
 ]
-admin.site.site_header='Hép Store · Quản trị hệ thống'
-admin.site.site_title='Hép Store'
+admin.site.site_header='Hép Bookstore · Quản trị hệ thống'
+admin.site.site_title='Hép Bookstore'
 admin.site.index_title='Quản trị dữ liệu'

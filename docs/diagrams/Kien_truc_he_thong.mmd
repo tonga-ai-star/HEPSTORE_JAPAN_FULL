@@ -1,6 +1,6 @@
 flowchart TB
   subgraph U["Người dùng"]
-    B1["Trình duyệt khách<br/>(máy tính, điện thoại)"]
+    B1["Trình duyệt khách<br/>(máy tính, điện thoại, camera quét mã)"]
     B2["Trình duyệt nhân viên<br/>+ camera / máy quét mã vạch"]
   end
   subgraph EXT["Dịch vụ ngoài"]
@@ -15,8 +15,9 @@ flowchart TB
     H1["shop.localhost:8000<br/>Trang khách"]
     H2["quantri.localhost:8000<br/>Trang quản trị"]
     subgraph MW["Middleware"]
+      M0["Security, Session"]
       M1["HostSplitMiddleware<br/>tách 2 link, chặn tunnel"]
-      M2["CSRF, Session, Auth"]
+      M2["CSRF, Auth"]
       M3["RoleAccessMiddleware<br/>quản lý / bán hàng / kho"]
     end
     subgraph V["Views (shop/)"]
@@ -25,6 +26,8 @@ flowchart TB
       V3["scan_views.py<br/>quét mã xem giá"]
       V4["staff_views.py<br/>nhân viên"]
     end
+    PAY["payments.py<br/>kiểm khoá, khớp mã đơn và số tiền"]
+    ADM["Django admin /admin/<br/>dữ liệu gốc, lời nhắn liên hệ"]
     SVC["services.py<br/>tạo đơn, đặt trước, kho,<br/>đánh dấu đã trả, hoàn tiền"]
     ORM["Django ORM<br/>models.py (13 bảng)"]
     TPL["Templates + static<br/>CSS wa, JS, three.js r170"]
@@ -34,19 +37,21 @@ flowchart TB
   end
   B1 --> H1
   B2 --> H2
-  H1 --> M1
-  H2 --> M1
-  M1 --> M2 --> M3 --> V
+  H1 --> M0
+  H2 --> M0
+  M0 --> M1 --> M2 --> M3 --> V
   V --> SVC --> ORM --> DB
+  V2 --> PAY --> SVC
+  ADM --> ORM
   V --> TPL
   CMD --> SVC
   ENV -.-> V2
   B1 -. "tải ảnh QR" .-> VQR
   B1 -. "chuyển khoản" .-> BANK
   BANK --> SEPAY
-  SEPAY -- "POST webhook" --> NG --> M1
+  SEPAY -- "POST webhook" --> NG --> M0
   B1 -. "font, icon" .-> CDN
   B2 -. "font, icon" .-> CDN
   classDef default fill:#f4ece0,stroke:#2c3a7e,color:#1f2547
   classDef hot fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
-  class SVC,M1,M3,V2 hot
+  class SVC,M1,M3,V2,PAY hot
