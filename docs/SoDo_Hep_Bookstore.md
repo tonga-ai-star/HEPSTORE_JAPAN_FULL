@@ -4,7 +4,7 @@ BFD, DFD và kiến trúc hệ thống, dựng theo mã nguồn hiện tại. �
 
 ## Sơ đồ phân rã chức năng (BFD)
 
-8 nhóm chức năng chính, mỗi nhóm tách thành các chức năng con. Nhóm 1 dành cho khách; nhóm 2 đến 8 nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả). Riêng 2.6 hoàn tiền, 3.4 xác nhận tiền thủ công, nhóm 7 và 8.2 đến 8.5 chỉ quản lý; 8.1 tổng quan ai cũng xem.
+8 nhóm chức năng chính, mỗi nhóm tách thành các chức năng con. Nhóm 1 dành cho khách; nhóm 2 đến 8 nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả). Danh mục sách chỉ sửa được ở trang /admin/ của Django (7.4). Riêng 2.6 hoàn tiền, 3.4 xác nhận tiền thủ công, nhóm 7 và 8.2 đến 8.5 chỉ quản lý; 8.1 tổng quan ai cũng xem.
 
 ![Sơ đồ phân rã chức năng (BFD)](diagrams/BFD.png)
 
@@ -28,10 +28,10 @@ flowchart LR
   SP -- "Webhook giao dịch tiền vào<br/>(số tiền, nội dung, mã tham chiếu)" --> P0
   BH -- "Đơn FB/Instagram, đơn POS, mã vạch,<br/>cập nhật trạng thái, khách hàng" --> P0
   P0 -- "Danh sách đơn, giao dịch chưa khớp,<br/>thông tin thanh toán" --> BH
-  NK -- "Sách, danh mục, điều chỉnh kho,<br/>nhà cung cấp, phiếu nhập" --> P0
+  NK -- "Sách, điều chỉnh kho,<br/>nhà cung cấp, phiếu nhập" --> P0
   P0 -- "Tồn kho, cảnh báo tồn thấp,<br/>lịch sử kho" --> NK
-  QL -- "Tài khoản nhân viên, vai trò,<br/>xác nhận tiền thủ công, hoàn tiền" --> P0
-  P0 -- "Báo cáo doanh thu, sách bán chạy,<br/>file CSV đơn hàng" --> QL
+  QL -- "Tài khoản nhân viên, vai trò, danh mục sách,<br/>xác nhận tiền thủ công, hoàn tiền" --> P0
+  P0 -- "Báo cáo doanh thu, sách bán chạy,<br/>file CSV đơn hàng, lời nhắn liên hệ" --> QL
   classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
   classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
   classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547
@@ -67,17 +67,20 @@ flowchart TB
   D8[("D8 Lời nhắn liên hệ")]:::store
   KH -- "Yêu cầu tìm sách, đơn đặt" --> P1
   P1 -- "Sách, mã QR, trạng thái đơn" --> KH
-  D1 -- "Giá, tồn kho, ngày về" --> P1
-  P1 -- "Đơn mới" --> D2
+  D1 <-- "Đọc giá, tồn, ngày về;<br/>trừ tồn khi đặt" --> P1
+  P1 <-- "Đơn mới; đọc trạng thái<br/>khi tra cứu" --> D2
+  P1 -- "Ghi xuất bán" --> D5
+  P1 -- "Hồ sơ khách từ đơn" --> D3
+  P1 -- "Tài khoản khách đăng ký" --> D7
   P1 -- "Lời nhắn" --> D8
   NV -- "Đơn FB/IG, POS, trạng thái" --> P2
   D2 <-- "Đọc, cập nhật đơn" --> P2
   P2 -- "Trừ, hoàn tồn" --> D1
   P2 -- "Ghi xuất, nhập lại" --> D5
-  D3 -- "Thông tin khách" --> P2
+  D3 <-- "Tìm, tạo hồ sơ khách<br/>theo SĐT" --> P2
   SP -- "Webhook tiền vào" --> P3
   P3 -- "Lưu giao dịch" --> D4
-  P3 -- "Đánh dấu đã thanh toán" --> D2
+  P3 <-- "Tìm đơn theo mã;<br/>đánh dấu đã thanh toán" --> D2
   QL -- "Xác nhận thủ công, hoàn tiền" --> P3
   P3 -- "Giao dịch chưa khớp" --> NV
   NV -- "Sách, điều chỉnh kho" --> P4
@@ -89,7 +92,8 @@ flowchart TB
   P5 -- "Cộng tồn khi nhận hàng" --> P4
   NV -- "Thông tin khách" --> P6
   P6 <--> D3
-  QL -- "Nhân viên, vai trò" --> P7
+  QL -- "Nhân viên, vai trò, danh mục" --> P7
+  P7 -- "Danh mục sách" --> D1
   P7 <--> D7
   D8 -- "Lời nhắn khách" --> P7
   P7 -- "Lời nhắn (trang /admin/)" --> QL
@@ -121,6 +125,8 @@ flowchart LR
   D2[("D2 Đơn hàng")]:::store
   D4[("D4 Giao dịch thanh toán")]:::store
   D5[("D5 Biến động kho")]:::store
+  D3[("D3 Khách hàng")]:::store
+  P12 -- "Hồ sơ khách" --> D3
   KH -- "Giỏ hàng, họ tên, SĐT, địa chỉ" --> P11
   D1 -- "Tồn kho, cho phép đặt trước,<br/>số ngày về hàng" --> P11
   P11 -- "Sách thiếu: hỏi khách đồng ý<br/>chờ khoảng N ngày" --> KH

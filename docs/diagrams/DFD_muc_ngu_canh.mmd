@@ -11,10 +11,10 @@ flowchart LR
   SP -- "Webhook giao dịch tiền vào<br/>(số tiền, nội dung, mã tham chiếu)" --> P0
   BH -- "Đơn FB/Instagram, đơn POS, mã vạch,<br/>cập nhật trạng thái, khách hàng" --> P0
   P0 -- "Danh sách đơn, giao dịch chưa khớp,<br/>thông tin thanh toán" --> BH
-  NK -- "Sách, danh mục, điều chỉnh kho,<br/>nhà cung cấp, phiếu nhập" --> P0
+  NK -- "Sách, điều chỉnh kho,<br/>nhà cung cấp, phiếu nhập" --> P0
   P0 -- "Tồn kho, cảnh báo tồn thấp,<br/>lịch sử kho" --> NK
-  QL -- "Tài khoản nhân viên, vai trò,<br/>xác nhận tiền thủ công, hoàn tiền" --> P0
-  P0 -- "Báo cáo doanh thu, sách bán chạy,<br/>file CSV đơn hàng" --> QL
+  QL -- "Tài khoản nhân viên, vai trò, danh mục sách,<br/>xác nhận tiền thủ công, hoàn tiền" --> P0
+  P0 -- "Báo cáo doanh thu, sách bán chạy,<br/>file CSV đơn hàng, lời nhắn liên hệ" --> QL
   classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
   classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
   classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547

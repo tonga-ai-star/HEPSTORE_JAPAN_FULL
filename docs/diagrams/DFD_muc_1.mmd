@@ -21,17 +21,20 @@ flowchart TB
   D8[("D8 Lời nhắn liên hệ")]:::store
   KH -- "Yêu cầu tìm sách, đơn đặt" --> P1
   P1 -- "Sách, mã QR, trạng thái đơn" --> KH
-  D1 -- "Giá, tồn kho, ngày về" --> P1
-  P1 -- "Đơn mới" --> D2
+  D1 <-- "Đọc giá, tồn, ngày về;<br/>trừ tồn khi đặt" --> P1
+  P1 <-- "Đơn mới; đọc trạng thái<br/>khi tra cứu" --> D2
+  P1 -- "Ghi xuất bán" --> D5
+  P1 -- "Hồ sơ khách từ đơn" --> D3
+  P1 -- "Tài khoản khách đăng ký" --> D7
   P1 -- "Lời nhắn" --> D8
   NV -- "Đơn FB/IG, POS, trạng thái" --> P2
   D2 <-- "Đọc, cập nhật đơn" --> P2
   P2 -- "Trừ, hoàn tồn" --> D1
   P2 -- "Ghi xuất, nhập lại" --> D5
-  D3 -- "Thông tin khách" --> P2
+  D3 <-- "Tìm, tạo hồ sơ khách<br/>theo SĐT" --> P2
   SP -- "Webhook tiền vào" --> P3
   P3 -- "Lưu giao dịch" --> D4
-  P3 -- "Đánh dấu đã thanh toán" --> D2
+  P3 <-- "Tìm đơn theo mã;<br/>đánh dấu đã thanh toán" --> D2
   QL -- "Xác nhận thủ công, hoàn tiền" --> P3
   P3 -- "Giao dịch chưa khớp" --> NV
   NV -- "Sách, điều chỉnh kho" --> P4
@@ -43,7 +46,8 @@ flowchart TB
   P5 -- "Cộng tồn khi nhận hàng" --> P4
   NV -- "Thông tin khách" --> P6
   P6 <--> D3
-  QL -- "Nhân viên, vai trò" --> P7
+  QL -- "Nhân viên, vai trò, danh mục" --> P7
+  P7 -- "Danh mục sách" --> D1
   P7 <--> D7
   D8 -- "Lời nhắn khách" --> P7
   P7 -- "Lời nhắn (trang /admin/)" --> QL

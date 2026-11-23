@@ -12,6 +12,8 @@ flowchart LR
   D2[("D2 Đơn hàng")]:::store
   D4[("D4 Giao dịch thanh toán")]:::store
   D5[("D5 Biến động kho")]:::store
+  D3[("D3 Khách hàng")]:::store
+  P12 -- "Hồ sơ khách" --> D3
   KH -- "Giỏ hàng, họ tên, SĐT, địa chỉ" --> P11
   D1 -- "Tồn kho, cho phép đặt trước,<br/>số ngày về hàng" --> P11
   P11 -- "Sách thiếu: hỏi khách đồng ý<br/>chờ khoảng N ngày" --> KH
