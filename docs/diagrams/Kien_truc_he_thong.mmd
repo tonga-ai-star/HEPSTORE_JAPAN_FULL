@@ -1,0 +1,52 @@
+flowchart TB
+  subgraph U["Người dùng"]
+    B1["Trình duyệt khách<br/>(máy tính, điện thoại)"]
+    B2["Trình duyệt nhân viên<br/>+ camera / máy quét mã vạch"]
+  end
+  subgraph EXT["Dịch vụ ngoài"]
+    BANK["Ngân hàng MB"]
+    SEPAY["SePay<br/>(gói miễn phí)"]
+    VQR["img.vietqr.io<br/>(ảnh mã QR)"]
+    CDN["Google Fonts, Phosphor icons,<br/>ZXing (CDN)"]
+  end
+  NG["ngrok tunnel<br/>chỉ mở /api/sepay/webhook/"]
+  subgraph SRV["Máy chạy Django 5.2 (không thuê hosting)"]
+    direction TB
+    H1["shop.localhost:8000<br/>Trang khách"]
+    H2["quantri.localhost:8000<br/>Trang quản trị"]
+    subgraph MW["Middleware"]
+      M1["HostSplitMiddleware<br/>tách 2 link, chặn tunnel"]
+      M2["CSRF, Session, Auth"]
+      M3["RoleAccessMiddleware<br/>quản lý / bán hàng / kho"]
+    end
+    subgraph V["Views (shop/)"]
+      V1["views.py<br/>cửa hàng + quản trị"]
+      V2["payment_views.py<br/>webhook, trạng thái thanh toán"]
+      V3["scan_views.py<br/>quét mã xem giá"]
+      V4["staff_views.py<br/>nhân viên"]
+    end
+    SVC["services.py<br/>tạo đơn, đặt trước, kho,<br/>đánh dấu đã trả, hoàn tiền"]
+    ORM["Django ORM<br/>models.py (13 bảng)"]
+    TPL["Templates + static<br/>CSS wa, JS, three.js r170"]
+    CMD["Lệnh nền: huy_don_qua_han,<br/>seed_demo, sepay_thu"]
+    DB[("SQLite<br/>db.sqlite3")]
+    ENV[/".env<br/>tài khoản NH, khoá SePay"/]
+  end
+  B1 --> H1
+  B2 --> H2
+  H1 --> M1
+  H2 --> M1
+  M1 --> M2 --> M3 --> V
+  V --> SVC --> ORM --> DB
+  V --> TPL
+  CMD --> SVC
+  ENV -.-> V2
+  B1 -. "tải ảnh QR" .-> VQR
+  B1 -. "chuyển khoản" .-> BANK
+  BANK --> SEPAY
+  SEPAY -- "POST webhook" --> NG --> M1
+  B1 -. "font, icon" .-> CDN
+  B2 -. "font, icon" .-> CDN
+  classDef default fill:#f4ece0,stroke:#2c3a7e,color:#1f2547
+  classDef hot fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
+  class SVC,M1,M3,V2 hot

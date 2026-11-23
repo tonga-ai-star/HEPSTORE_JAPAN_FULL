@@ -1,0 +1,52 @@
+flowchart TB
+  KH["Khách hàng"]:::ent
+  NV["Nhân viên<br/>(bán hàng, kho)"]:::ent
+  QL["Quản lý"]:::ent
+  SP["SePay"]:::ent
+  P1(("1.0<br/>Bán hàng<br/>trực tuyến")):::proc
+  P2(("2.0<br/>Quản lý<br/>đơn hàng")):::proc
+  P3(("3.0<br/>Quản lý<br/>thanh toán")):::proc
+  P4(("4.0<br/>Quản lý<br/>sách và kho")):::proc
+  P5(("5.0<br/>Quản lý<br/>nhập hàng")):::proc
+  P6(("6.0<br/>Quản lý<br/>khách hàng")):::proc
+  P7(("7.0<br/>Quản trị<br/>hệ thống")):::proc
+  P8(("8.0<br/>Báo cáo<br/>thống kê")):::proc
+  D1[("D1 Sách, danh mục")]:::store
+  D2[("D2 Đơn hàng, chi tiết đơn")]:::store
+  D3[("D3 Khách hàng")]:::store
+  D4[("D4 Giao dịch thanh toán")]:::store
+  D5[("D5 Biến động kho")]:::store
+  D6[("D6 Nhà cung cấp, phiếu nhập")]:::store
+  D7[("D7 Tài khoản, nhân viên")]:::store
+  D8[("D8 Lời nhắn liên hệ")]:::store
+  KH -- "Yêu cầu tìm sách, đơn đặt" --> P1
+  P1 -- "Sách, mã QR, trạng thái đơn" --> KH
+  D1 -- "Giá, tồn kho, ngày về" --> P1
+  P1 -- "Đơn mới" --> D2
+  P1 -- "Lời nhắn" --> D8
+  NV -- "Đơn FB/IG, POS, trạng thái" --> P2
+  D2 <-- "Đọc, cập nhật đơn" --> P2
+  P2 -- "Trừ, hoàn tồn" --> D1
+  P2 -- "Ghi xuất, nhập lại" --> D5
+  D3 -- "Thông tin khách" --> P2
+  SP -- "Webhook tiền vào" --> P3
+  P3 -- "Lưu giao dịch" --> D4
+  P3 -- "Đánh dấu đã thanh toán" --> D2
+  QL -- "Xác nhận thủ công, hoàn tiền" --> P3
+  P3 -- "Giao dịch chưa khớp" --> NV
+  NV -- "Sách, điều chỉnh kho" --> P4
+  P4 -- "Cập nhật sách, tồn" --> D1
+  P4 -- "Ghi biến động" --> D5
+  P4 -- "Chia sách cho đơn đặt trước" --> D2
+  NV -- "Phiếu nhập" --> P5
+  P5 <--> D6
+  P5 -- "Cộng tồn khi nhận hàng" --> P4
+  NV -- "Thông tin khách" --> P6
+  P6 <--> D3
+  QL -- "Nhân viên, vai trò" --> P7
+  P7 <--> D7
+  D2 -- "Đơn, doanh thu" --> P8
+  P8 -- "Báo cáo, CSV" --> QL
+  classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
+  classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
+  classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547

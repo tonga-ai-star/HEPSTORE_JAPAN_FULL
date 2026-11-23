@@ -1,0 +1,20 @@
+flowchart LR
+  KH["Khách hàng"]:::ent
+  BH["Nhân viên bán hàng"]:::ent
+  NK["Nhân viên kho"]:::ent
+  QL["Quản lý"]:::ent
+  SP["SePay / Ngân hàng MB"]:::ent
+  P0(("0<br/>Hệ thống<br/>Hép Bookstore")):::proc
+  KH -- "Tìm sách, giỏ hàng, thông tin đặt hàng,<br/>mã tra cứu, lời nhắn liên hệ" --> P0
+  P0 -- "Danh mục, giá, tồn kho, mã QR chuyển khoản,<br/>trạng thái đơn, ngày dự kiến có hàng" --> KH
+  KH -. "Chuyển khoản theo mã QR" .-> SP
+  SP -- "Webhook giao dịch tiền vào<br/>(số tiền, nội dung, mã tham chiếu)" --> P0
+  BH -- "Đơn FB/Instagram, đơn POS, mã vạch,<br/>cập nhật trạng thái, khách hàng" --> P0
+  P0 -- "Danh sách đơn, giao dịch chưa khớp,<br/>thông tin thanh toán" --> BH
+  NK -- "Sách, danh mục, điều chỉnh kho,<br/>nhà cung cấp, phiếu nhập" --> P0
+  P0 -- "Tồn kho, cảnh báo tồn thấp,<br/>lịch sử kho" --> NK
+  QL -- "Tài khoản nhân viên, vai trò,<br/>xác nhận tiền thủ công, hoàn tiền" --> P0
+  P0 -- "Báo cáo doanh thu, sách bán chạy,<br/>file CSV đơn hàng" --> QL
+  classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
+  classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
+  classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547
