@@ -45,6 +45,8 @@ flowchart TB
   P6 <--> D3
   QL -- "Nhân viên, vai trò" --> P7
   P7 <--> D7
+  D8 -- "Lời nhắn khách" --> P7
+  P7 -- "Lời nhắn (trang /admin/)" --> QL
   D2 -- "Đơn, doanh thu" --> P8
   P8 -- "Báo cáo, CSV" --> QL
   classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold

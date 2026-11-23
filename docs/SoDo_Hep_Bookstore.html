@@ -16,7 +16,7 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
 .bfd-col li{position:relative;margin-top:10px;background:#f4ece0;border:1.5px solid #2c3a7e;border-radius:6px;padding:6px 8px;font-size:13px}
 .bfd-col li::before{content:'';position:absolute;left:-18px;top:50%;width:16px;border-top:2px solid #2c3a7e}
 .bfd-col li:last-child::after{content:'';position:absolute;left:-20px;top:calc(50% + 2px);bottom:-200px;width:4px;background:#fff}
-.bfd-col ul{overflow:hidden;padding-bottom:2px}</style></head><body><h1>Sơ đồ phân tích hệ thống Hép Bookstore</h1><p class="note">BFD, DFD và kiến trúc hệ thống, dựng theo mã nguồn hiện tại (shop/). Đi kèm ERD trong ERD_Hep_Bookstore.</p><section><h2>Sơ đồ phân rã chức năng (BFD)</h2><p class="note">8 nhóm chức năng chính, mỗi nhóm tách thành các chức năng con. Nhóm 1 dành cho khách; nhóm 2 đến 8 nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả, riêng 3.4, 2.6 hoàn tiền, 7 và 8 chỉ quản lý).</p><div class="bfd" id="bfd"><div class="bfd-root">HỆ THỐNG QUẢN LÝ BÁN SÁCH HÉP BOOKSTORE</div><div class="bfd-row"><div class="bfd-col"><div class="bfd-fn">1. Bán hàng trực tuyến</div><ul><li><b>1.1</b> Xem, tìm, lọc sách</li><li><b>1.2</b> Quản lý giỏ hàng</li><li><b>1.3</b> Đặt hàng, đặt trước sách hết</li><li><b>1.4</b> Thanh toán QR hoặc COD</li><li><b>1.5</b> Tra cứu đơn hàng</li><li><b>1.6</b> Đăng ký, tài khoản khách</li><li><b>1.7</b> Quét mã xem giá</li><li><b>1.8</b> Gửi liên hệ</li></ul></div><div class="bfd-col"><div class="bfd-fn">2. Quản lý đơn hàng</div><ul><li><b>2.1</b> Xem, lọc đơn</li><li><b>2.2</b> Cập nhật trạng thái đơn</li><li><b>2.3</b> Nhập đơn Facebook/Instagram</li><li><b>2.4</b> Bán tại quầy (POS, quét mã vạch)</li><li><b>2.5</b> Tự hủy đơn giữ chỗ quá hạn</li><li><b>2.6</b> Hủy đơn, hoàn tiền</li></ul></div><div class="bfd-col"><div class="bfd-fn">3. Quản lý thanh toán</div><ul><li><b>3.1</b> Nhận webhook SePay</li><li><b>3.2</b> Tự khớp theo mã đơn và số tiền</li><li><b>3.3</b> Xử lý giao dịch chưa khớp</li><li><b>3.4</b> Xác nhận thủ công (quản lý)</li></ul></div><div class="bfd-col"><div class="bfd-fn">4. Quản lý sách và kho</div><ul><li><b>4.1</b> Thêm, sửa sách, danh mục</li><li><b>4.2</b> Điều chỉnh tồn kho</li><li><b>4.3</b> Cảnh báo tồn thấp</li><li><b>4.4</b> Chia sách về cho đơn đặt trước</li><li><b>4.5</b> Lịch sử biến động kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">5. Quản lý nhập hàng</div><ul><li><b>5.1</b> Quản lý nhà cung cấp</li><li><b>5.2</b> Lập phiếu nhập</li><li><b>5.3</b> Nhận hàng, cộng kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">6. Quản lý khách hàng</div><ul><li><b>6.1</b> Thêm, sửa khách hàng</li><li><b>6.2</b> Xem lịch sử mua</li></ul></div><div class="bfd-col"><div class="bfd-fn">7. Quản trị hệ thống</div><ul><li><b>7.1</b> Đăng nhập, đăng xuất</li><li><b>7.2</b> Quản lý nhân viên</li><li><b>7.3</b> Phân quyền: quản lý, bán hàng, kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">8. Báo cáo thống kê</div><ul><li><b>8.1</b> Tổng quan (dashboard)</li><li><b>8.2</b> Doanh thu theo kênh</li><li><b>8.3</b> Đơn theo trạng thái</li><li><b>8.4</b> Sách bán chạy</li><li><b>8.5</b> Xuất đơn ra CSV</li></ul></div></div></div></section><section><h2>DFD mức ngữ cảnh (mức 0)</h2><p class="note">Toàn bộ hệ thống là một tiến trình. 5 tác nhân ngoài trao đổi dữ liệu với hệ thống. Khách chuyển khoản trực tiếp cho ngân hàng (nét đứt), hệ thống chỉ biết tiền vào qua webhook của SePay.</p><div class="fig"><pre class="mermaid" id="DFD_muc_ngu_canh">flowchart LR
+.bfd-col ul{overflow:hidden;padding-bottom:2px}</style></head><body><h1>Sơ đồ phân tích hệ thống Hép Bookstore</h1><p class="note">BFD, DFD và kiến trúc hệ thống, dựng theo mã nguồn hiện tại (shop/). Đi kèm ERD trong ERD_Hep_Bookstore.</p><section><h2>Sơ đồ phân rã chức năng (BFD)</h2><p class="note">8 nhóm chức năng chính, mỗi nhóm tách thành các chức năng con. Nhóm 1 dành cho khách; nhóm 2 đến 8 nằm ở trang quản trị và chỉ mở theo vai trò: bán hàng (2, 3, 6), kho (4, 5), quản lý (tất cả). Riêng 2.6 hoàn tiền, 3.4 xác nhận tiền thủ công, nhóm 7 và 8.2 đến 8.5 chỉ quản lý; 8.1 tổng quan ai cũng xem.</p><div class="bfd" id="bfd"><div class="bfd-root">HỆ THỐNG QUẢN LÝ BÁN SÁCH HÉP BOOKSTORE</div><div class="bfd-row"><div class="bfd-col"><div class="bfd-fn">1. Bán hàng trực tuyến</div><ul><li><b>1.1</b> Xem, tìm, lọc sách</li><li><b>1.2</b> Quản lý giỏ hàng</li><li><b>1.3</b> Đặt hàng, đặt trước sách hết</li><li><b>1.4</b> Thanh toán QR hoặc COD</li><li><b>1.5</b> Tra cứu đơn hàng</li><li><b>1.6</b> Đăng ký, tài khoản khách</li><li><b>1.7</b> Quét mã xem giá</li><li><b>1.8</b> Gửi liên hệ</li></ul></div><div class="bfd-col"><div class="bfd-fn">2. Quản lý đơn hàng</div><ul><li><b>2.1</b> Xem, lọc đơn</li><li><b>2.2</b> Cập nhật trạng thái đơn</li><li><b>2.3</b> Nhập đơn Facebook/Instagram</li><li><b>2.4</b> Bán tại quầy (POS, quét mã vạch)</li><li><b>2.5</b> Tự hủy đơn giữ chỗ quá hạn</li><li><b>2.6</b> Hủy đơn, hoàn tiền</li></ul></div><div class="bfd-col"><div class="bfd-fn">3. Quản lý thanh toán</div><ul><li><b>3.1</b> Nhận webhook SePay</li><li><b>3.2</b> Tự khớp theo mã đơn và số tiền</li><li><b>3.3</b> Xử lý giao dịch chưa khớp</li><li><b>3.4</b> Xác nhận thủ công (quản lý)</li></ul></div><div class="bfd-col"><div class="bfd-fn">4. Quản lý sách và kho</div><ul><li><b>4.1</b> Thêm, sửa sách, danh mục</li><li><b>4.2</b> Điều chỉnh tồn kho</li><li><b>4.3</b> Cảnh báo tồn thấp</li><li><b>4.4</b> Chia sách về cho đơn đặt trước</li><li><b>4.5</b> Lịch sử biến động kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">5. Quản lý nhập hàng</div><ul><li><b>5.1</b> Quản lý nhà cung cấp</li><li><b>5.2</b> Lập phiếu nhập</li><li><b>5.3</b> Nhận hàng, cộng kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">6. Quản lý khách hàng</div><ul><li><b>6.1</b> Thêm, sửa khách hàng</li><li><b>6.2</b> Xem lịch sử mua</li></ul></div><div class="bfd-col"><div class="bfd-fn">7. Quản trị hệ thống</div><ul><li><b>7.1</b> Đăng nhập, đăng xuất</li><li><b>7.2</b> Quản lý nhân viên</li><li><b>7.3</b> Phân quyền: quản lý, bán hàng, kho</li></ul></div><div class="bfd-col"><div class="bfd-fn">8. Báo cáo thống kê</div><ul><li><b>8.1</b> Tổng quan (dashboard)</li><li><b>8.2</b> Doanh thu theo kênh</li><li><b>8.3</b> Đơn theo trạng thái</li><li><b>8.4</b> Sách bán chạy</li><li><b>8.5</b> Xuất đơn ra CSV</li></ul></div></div></div></section><section><h2>DFD mức ngữ cảnh (mức 0)</h2><p class="note">Toàn bộ hệ thống là một tiến trình. 5 tác nhân ngoài trao đổi dữ liệu với hệ thống. Khách chuyển khoản trực tiếp cho ngân hàng (nét đứt), hệ thống chỉ biết tiền vào qua webhook của SePay.</p><div class="fig"><pre class="mermaid" id="DFD_muc_ngu_canh">flowchart LR
   KH[&quot;Khách hàng&quot;]:::ent
   BH[&quot;Nhân viên bán hàng&quot;]:::ent
   NK[&quot;Nhân viên kho&quot;]:::ent
@@ -82,11 +82,13 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
   P6 &lt;--&gt; D3
   QL -- &quot;Nhân viên, vai trò&quot; --&gt; P7
   P7 &lt;--&gt; D7
+  D8 -- &quot;Lời nhắn khách&quot; --&gt; P7
+  P7 -- &quot;Lời nhắn (trang /admin/)&quot; --&gt; QL
   D2 -- &quot;Đơn, doanh thu&quot; --&gt; P8
   P8 -- &quot;Báo cáo, CSV&quot; --&gt; QL
   classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
   classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
-  classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547</pre></div><p class="legend">Ký hiệu: khối xanh đậm là tác nhân ngoài; hình tròn cam là tiến trình; hình trụ là kho dữ liệu; mũi tên là luồng dữ liệu, nét đứt là luồng ngoài hệ thống.</p></section><section><h2>DFD mức dưới đỉnh (mức 2): đặt hàng và thanh toán QR</h2><p class="note">Phân rã luồng quan trọng nhất: khách đặt hàng, trả tiền bằng QR, đơn tự chuyển sang đã thanh toán. Đơn chuyển khoản không trả tiền sau 3 ngày bị hủy và trả sách về kho.</p><div class="fig"><pre class="mermaid" id="DFD_muc_2_dat_hang_thanh_toan">flowchart LR
+  classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547</pre></div><p class="legend">Ký hiệu: khối xanh đậm là tác nhân ngoài; hình tròn cam là tiến trình; hình trụ là kho dữ liệu; mũi tên là luồng dữ liệu, nét đứt là luồng ngoài hệ thống.</p></section><section><h2>DFD mức dưới đỉnh (mức 2): đặt hàng và thanh toán QR</h2><p class="note">Phân rã luồng quan trọng nhất: khách đặt hàng, trả tiền bằng QR, đơn tự chuyển sang đã thanh toán. Đơn web còn ở trạng thái mới, chưa trả tiền quá 3 ngày (đơn đặt trước: 3 ngày sau ngày dự kiến có hàng) thì tự hủy và trả sách về kho; đơn đã có giao dịch chuyển khoản liên quan thì để nhân viên xử lý, không tự hủy.</p><div class="fig"><pre class="mermaid" id="DFD_muc_2_dat_hang_thanh_toan">flowchart LR
   KH[&quot;Khách hàng&quot;]:::ent
   SP[&quot;SePay&quot;]:::ent
   NV[&quot;Nhân viên bán hàng&quot;]:::ent
@@ -113,18 +115,18 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
   SP -- &quot;Webhook (Authorization: Apikey)&quot; --&gt; P31
   P31 -- &quot;Lưu giao dịch&quot; --&gt; D4
   D2 -- &quot;Đơn chờ theo mã, số tiền&quot; --&gt; P31
-  P31 -- &quot;Khớp: đã thanh toán&quot; --&gt; D2
-  P31 -- &quot;Không khớp: chờ xử lý&quot; --&gt; NV
-  D2 -- &quot;Trạng thái đơn (hỏi mỗi vài giây)&quot; --&gt; P14
+  P31 -- &quot;Đúng mã đơn và đủ số tiền:&lt;br/&gt;đã thanh toán, xác nhận đơn&quot; --&gt; D2
+  P31 -- &quot;Sai số tiền, không thấy mã,&lt;br/&gt;trùng đơn: chờ nhân viên xử lý&quot; --&gt; NV
+  D2 -- &quot;Trạng thái đơn (trang QR hỏi lại mỗi 4 giây)&quot; --&gt; P14
   P14 -- &quot;Thanh toán thành công&lt;br/&gt;hoặc đơn đã hủy&quot; --&gt; KH
-  D2 -- &quot;Đơn chưa trả tiền quá 3 ngày&quot; --&gt; P21
+  D2 -- &quot;Đơn web chưa xác nhận, chưa trả tiền&lt;br/&gt;quá 3 ngày, không có giao dịch kèm&quot; --&gt; P21
   P21 -- &quot;Hủy đơn&quot; --&gt; D2
   P21 -- &quot;Trả sách về kho&quot; --&gt; D1
   classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
   classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
   classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547</pre></div><p class="legend">Ký hiệu: khối xanh đậm là tác nhân ngoài; hình tròn cam là tiến trình; hình trụ là kho dữ liệu; mũi tên là luồng dữ liệu, nét đứt là luồng ngoài hệ thống.</p></section><section><h2>Kiến trúc hệ thống (System Architecture)</h2><p class="note">Ứng dụng Django một khối chạy trên máy cửa hàng, không thuê hosting. Hai tên miền trên cùng một server được tách bằng middleware. Chỉ đường dẫn webhook được mở ra Internet qua ngrok để SePay gọi vào. Luồng nghiệp vụ dồn vào services.py; views chỉ nhận yêu cầu và hiển thị.</p><div class="fig"><pre class="mermaid" id="Kien_truc_he_thong">flowchart TB
   subgraph U[&quot;Người dùng&quot;]
-    B1[&quot;Trình duyệt khách&lt;br/&gt;(máy tính, điện thoại)&quot;]
+    B1[&quot;Trình duyệt khách&lt;br/&gt;(máy tính, điện thoại, camera quét mã)&quot;]
     B2[&quot;Trình duyệt nhân viên&lt;br/&gt;+ camera / máy quét mã vạch&quot;]
   end
   subgraph EXT[&quot;Dịch vụ ngoài&quot;]
@@ -139,8 +141,9 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
     H1[&quot;shop.localhost:8000&lt;br/&gt;Trang khách&quot;]
     H2[&quot;quantri.localhost:8000&lt;br/&gt;Trang quản trị&quot;]
     subgraph MW[&quot;Middleware&quot;]
+      M0[&quot;Security, Session&quot;]
       M1[&quot;HostSplitMiddleware&lt;br/&gt;tách 2 link, chặn tunnel&quot;]
-      M2[&quot;CSRF, Session, Auth&quot;]
+      M2[&quot;CSRF, Auth&quot;]
       M3[&quot;RoleAccessMiddleware&lt;br/&gt;quản lý / bán hàng / kho&quot;]
     end
     subgraph V[&quot;Views (shop/)&quot;]
@@ -149,6 +152,8 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
       V3[&quot;scan_views.py&lt;br/&gt;quét mã xem giá&quot;]
       V4[&quot;staff_views.py&lt;br/&gt;nhân viên&quot;]
     end
+    PAY[&quot;payments.py&lt;br/&gt;kiểm khoá, khớp mã đơn và số tiền&quot;]
+    ADM[&quot;Django admin /admin/&lt;br/&gt;dữ liệu gốc, lời nhắn liên hệ&quot;]
     SVC[&quot;services.py&lt;br/&gt;tạo đơn, đặt trước, kho,&lt;br/&gt;đánh dấu đã trả, hoàn tiền&quot;]
     ORM[&quot;Django ORM&lt;br/&gt;models.py (13 bảng)&quot;]
     TPL[&quot;Templates + static&lt;br/&gt;CSS wa, JS, three.js r170&quot;]
@@ -158,19 +163,21 @@ section{page-break-after:always;margin-bottom:48px}section:last-child{page-break
   end
   B1 --&gt; H1
   B2 --&gt; H2
-  H1 --&gt; M1
-  H2 --&gt; M1
-  M1 --&gt; M2 --&gt; M3 --&gt; V
+  H1 --&gt; M0
+  H2 --&gt; M0
+  M0 --&gt; M1 --&gt; M2 --&gt; M3 --&gt; V
   V --&gt; SVC --&gt; ORM --&gt; DB
+  V2 --&gt; PAY --&gt; SVC
+  ADM --&gt; ORM
   V --&gt; TPL
   CMD --&gt; SVC
   ENV -.-&gt; V2
   B1 -. &quot;tải ảnh QR&quot; .-&gt; VQR
   B1 -. &quot;chuyển khoản&quot; .-&gt; BANK
   BANK --&gt; SEPAY
-  SEPAY -- &quot;POST webhook&quot; --&gt; NG --&gt; M1
+  SEPAY -- &quot;POST webhook&quot; --&gt; NG --&gt; M0
   B1 -. &quot;font, icon&quot; .-&gt; CDN
   B2 -. &quot;font, icon&quot; .-&gt; CDN
   classDef default fill:#f4ece0,stroke:#2c3a7e,color:#1f2547
   classDef hot fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
-  class SVC,M1,M3,V2 hot</pre></div></section><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,theme:"base",flowchart:{useMaxWidth:false,htmlLabels:true,curve:"basis"},themeVariables:{fontFamily:"Arial",fontSize:"15px",lineColor:"#2c3a7e",primaryTextColor:"#1f2547",edgeLabelBackground:"#ffffff"}});</script></body></html>
+  class SVC,M1,M3,V2,PAY hot</pre></div></section><script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,theme:"base",flowchart:{useMaxWidth:false,htmlLabels:true,curve:"basis"},themeVariables:{fontFamily:"Arial",fontSize:"15px",lineColor:"#2c3a7e",primaryTextColor:"#1f2547",edgeLabelBackground:"#ffffff"}});</script></body></html>
