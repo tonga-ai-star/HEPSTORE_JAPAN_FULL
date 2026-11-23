@@ -483,6 +483,7 @@ td .sub-cell{display:block;font-size:13px;color:var(--ink-soft)}
   .header-layout{display:grid;grid-template-columns:1fr auto;min-height:0;gap:0;padding-top:10px}
   .brand .bear{width:32px;height:32px}
   .brand-word{font-size:20px}
+  .brand-word-img{height:18px}
   /* menu chính hiện đủ 4 mục trên một hàng, nhãn dài tự xuống dòng ở màn rất hẹp; không cuộn ngang */
   .main-nav{grid-column:1/-1;order:3;display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;align-items:center;gap:0 6px;min-height:44px;padding-block:2px 4px}
   .main-nav a{font-size:13px;line-height:1.25;white-space:normal;text-align:center;text-wrap:balance}

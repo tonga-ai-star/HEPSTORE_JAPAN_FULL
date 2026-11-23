@@ -175,6 +175,45 @@
 
 /* ---------- 10. chính sách ---------- */
 .policy-num.hanko{width:40px;height:40px;border:0;--hk:18px;color:var(--orange-ink)}
+.policy-jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.policy-jump a{padding:6px 14px;border:1.5px solid var(--line);border-radius:999px;font-size:14px;font-weight:600;background:var(--surface);transition:border-color var(--dur-fast),color var(--dur-fast),transform var(--dur-fast) var(--ease-out)}
+.policy-jump a:hover,.policy-jump a:focus-visible{border-color:var(--orange);color:var(--orange-ink);transform:translateY(-2px)}
+.policy-rows{max-width:960px;padding-top:40px;padding-bottom:32px}
+.policy-row{display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:center;padding:28px 0;border-bottom:1.5px dashed var(--line);scroll-margin-top:96px}
+.policy-row:nth-child(even){grid-template-columns:1fr 220px}
+.policy-row:nth-child(even) .policy-figure{order:2}
+.policy-row .policy-item{margin:0;font-size:17px}
+.policy-row .policy-item p{max-width:62ch;margin-bottom:0}
+.policy-row:target .policy-figure{border-color:var(--orange)}
+.policy-figure{position:relative;display:grid;place-items:center;aspect-ratio:6/5;border:2px solid var(--line);border-radius:18px;background:var(--surface);transition:transform var(--dur-mid) var(--ease-out),border-color var(--dur-mid)}
+.policy-figure::after{content:'';position:absolute;inset:8px;border-radius:12px;background:url('../img/wa/seigaiha.svg') 0 0/40px auto;opacity:.08;pointer-events:none}
+.policy-row:hover .policy-figure{transform:rotate(-2deg) translateY(-4px);border-color:var(--navy)}
+.policy-end{padding-top:32px}
+.policy-art{width:100%;height:auto;overflow:visible}
+.policy-figure .policy-art{width:82%;position:relative;z-index:1}
+.pa-line,.pa-arrow,.pa-wheel{fill:none;stroke:var(--navy);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pa-wheel{fill:var(--surface)}
+.pa-soft{fill:var(--surface-2)}
+.pa-acc{fill:var(--orange)}
+.pa-knock{fill:none;stroke:var(--surface);stroke-width:3;stroke-linecap:round}
+.pa-knock-dot{fill:var(--surface)}
+.pa-qr,.pa-dots{fill:var(--navy)}
+.pa-mark{fill:none;stroke:var(--orange);stroke-width:3}
+.pa-float,.pa-drive,.pa-coin,.pa-spin,.pa-wind,.pa-mark{transform-box:fill-box;transform-origin:50% 50%}
+/* 4 ô chính sách cuối trang chủ, ngay trên footer */
+.policy-strip{padding:56px 0 64px}
+.policy-strip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.policy-cell{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 16px 20px;border:2px solid var(--line);border-radius:18px;background:var(--surface);transition:transform var(--dur-mid) var(--ease-out),border-color var(--dur-mid),box-shadow var(--dur-mid)}
+.policy-cell .policy-art{width:96px;margin-bottom:10px}
+.policy-cell h3{margin:0 0 4px;font-size:18px}
+.policy-cell p{margin:0;font-size:14px;color:var(--ink-soft)}
+.policy-cell:hover,.policy-cell:focus-visible{transform:translateY(-6px) rotate(-1deg);border-color:var(--orange);box-shadow:var(--shadow);color:var(--ink)}
+.policy-cell:nth-child(even):hover,.policy-cell:nth-child(even):focus-visible{transform:translateY(-6px) rotate(1deg)}
+/* logo gốc: gấu nét bút + chữ cam */
+.bear-orig .bear-line{stroke-width:3.4}
+.brand-word-img{display:block;height:24px;width:auto}
+.brand-stack{flex-direction:column;align-items:flex-start;gap:6px}
+.brand-stack .brand-word-img{height:28px}
 
 /* ---------- 11. chuyển động lượt B (công thức trong motion-recipes.md, bảng "Đợt wa") ---------- */
 @keyframes obi-wrap{from{opacity:0;transform:translateX(-28px) scaleX(.6)}to{opacity:1;transform:none}}
@@ -248,8 +287,27 @@
 .motion-on .lost-seal{animation:hanko-stamp 380ms var(--ease-thud) 1300ms both}
 
 /* chính sách: số đóng dấu */
-.motion-on .policy-item:not(.is-in) .policy-num{opacity:0}
-.motion-on .policy-item.is-in .policy-num{animation:hanko-stamp 380ms var(--ease-thud) 300ms both}
+.motion-on .policy-row:not(.is-in) .policy-num{opacity:0}
+.motion-on .policy-row.is-in .policy-num{animation:hanko-stamp 380ms var(--ease-thud) 300ms both}
+/* chính sách: tranh minh họa nảy vào, chi tiết chuyển động nhẹ liên tục */
+@keyframes pa-pop{from{opacity:0;transform:scale(.7) rotate(-8deg)}70%{transform:scale(1.05) rotate(2deg)}to{opacity:1;transform:none}}
+@keyframes pa-bob{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@keyframes pa-roll{from{transform:translateX(-3px)}to{transform:translateX(3px)}}
+@keyframes pa-turn{to{transform:rotate(360deg)}}
+@keyframes pa-gust{0%,100%{opacity:.2;transform:translateX(4px)}50%{opacity:1;transform:translateX(-4px)}}
+@keyframes pa-ping{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+.motion-on .policy-row:not(.is-in) .policy-art,.motion-on .policy-cell:not(.is-in) .policy-art{opacity:0}
+.motion-on .policy-row.is-in .policy-art{animation:pa-pop 640ms var(--ease-spring) 120ms both}
+.motion-on .policy-cell.is-in .policy-art{animation:pa-pop 640ms var(--ease-spring) calc(var(--i,0) * 110ms + 150ms) both}
+.motion-on .is-in .pa-float{animation:pa-bob 1.6s ease-in-out infinite alternate}
+.motion-on .is-in .pa-drive{animation:pa-roll 1.2s ease-in-out infinite alternate}
+.motion-on .is-in .pa-wind{animation:pa-gust 1.2s ease-in-out infinite}
+.motion-on .is-in .pa-coin{animation:pa-bob 1.4s ease-in-out infinite alternate}
+.motion-on .is-in .pa-spin{animation:pa-turn 9s linear infinite}
+.motion-on .is-in .pa-mark{animation:pa-ping 1.8s ease-in-out infinite}
+.motion-on .policy-cell.is-in{animation:sign-drop 820ms var(--ease-spring) calc(var(--i,0) * 110ms) backwards}
+.motion-on .policy-cell[data-reveal]{transform:none}
+.motion-on .policy-cell[data-reveal]:not(.is-in){opacity:0}
 
 /* chữ dọc trôi lệch tốc độ, obi tuột dần khi đọc xuống (CSS scroll-timeline) */
 @supports (animation-timeline: view()){
@@ -264,6 +322,7 @@
 
 /* ---------- 12. màn hình hẹp ---------- */
 @media (max-width:1100px){
+  .policy-strip-grid{grid-template-columns:repeat(2,1fr)}
   .detail-grid{gap:40px}
   .detail-cover{width:240px;height:336px}
   .stage-easel{width:280px}
@@ -272,6 +331,13 @@
   .stage-tate{left:12px;font-size:24px}
 }
 @media (max-width:767px){
+  .policy-row,.policy-row:nth-child(even){grid-template-columns:1fr;gap:16px}
+  .policy-row:nth-child(even) .policy-figure{order:0}
+  .policy-figure{max-width:180px}
+  .policy-strip-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .policy-cell{padding:16px 10px}
+  .policy-cell .policy-art{width:72px}
+  .policy-cell h3{font-size:16px}
   .footer-paper{padding-top:44px}
   .footer-grid,.footer-bottom{padding-right:56px}
   .footer-tate{right:12px;top:36px;font-size:19px}
