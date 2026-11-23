@@ -1,0 +1,37 @@
+flowchart LR
+  KH["Khách hàng"]:::ent
+  SP["SePay"]:::ent
+  NV["Nhân viên bán hàng"]:::ent
+  P11(("1.1<br/>Kiểm tra giỏ<br/>và tồn kho")):::proc
+  P12(("1.2<br/>Tạo đơn,<br/>tách phần đặt trước")):::proc
+  P13(("1.3<br/>Hiện mã QR<br/>VietQR")):::proc
+  P31(("3.1<br/>Nhận và<br/>khớp giao dịch")):::proc
+  P14(("1.4<br/>Báo kết quả<br/>cho khách")):::proc
+  P21(("2.1<br/>Tự hủy đơn<br/>quá hạn giữ chỗ")):::proc
+  D1[("D1 Sách")]:::store
+  D2[("D2 Đơn hàng")]:::store
+  D4[("D4 Giao dịch thanh toán")]:::store
+  D5[("D5 Biến động kho")]:::store
+  KH -- "Giỏ hàng, họ tên, SĐT, địa chỉ" --> P11
+  D1 -- "Tồn kho, cho phép đặt trước,<br/>số ngày về hàng" --> P11
+  P11 -- "Sách thiếu: hỏi khách đồng ý<br/>chờ khoảng N ngày" --> KH
+  P11 -- "Dòng hợp lệ" --> P12
+  P12 -- "Trừ phần có sẵn" --> D1
+  P12 -- "Ghi xuất kho" --> D5
+  P12 -- "Đơn, mã đơn, ngày dự kiến" --> D2
+  P12 -- "Mã đơn, tổng tiền" --> P13
+  P13 -- "QR chứa số tiền và mã đơn" --> KH
+  KH -. "Chuyển khoản" .-> SP
+  SP -- "Webhook (Authorization: Apikey)" --> P31
+  P31 -- "Lưu giao dịch" --> D4
+  D2 -- "Đơn chờ theo mã, số tiền" --> P31
+  P31 -- "Khớp: đã thanh toán" --> D2
+  P31 -- "Không khớp: chờ xử lý" --> NV
+  D2 -- "Trạng thái đơn (hỏi mỗi vài giây)" --> P14
+  P14 -- "Thanh toán thành công<br/>hoặc đơn đã hủy" --> KH
+  D2 -- "Đơn chưa trả tiền quá 3 ngày" --> P21
+  P21 -- "Hủy đơn" --> D2
+  P21 -- "Trả sách về kho" --> D1
+  classDef ent fill:#2c3a7e,stroke:#1f2547,color:#ffffff,font-weight:bold
+  classDef proc fill:#fdf1e4,stroke:#d9772b,stroke-width:2px,color:#1f2547
+  classDef store fill:#f4ece0,stroke:#2c3a7e,stroke-dasharray:0,color:#1f2547
