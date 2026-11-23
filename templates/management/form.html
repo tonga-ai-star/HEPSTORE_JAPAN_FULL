@@ -1,1 +1,4 @@
-{% extends 'management/base.html' %}{% block manage_content %}<div class="manager-heading"><div><span class="eyebrow">CHỈNH SỬA DỮ LIỆU</span><h1>{{ heading }}</h1></div><a href="{% url back %}" class="btn btn-outline">← Quay lại</a></div><div class="paper-panel form-width"><form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="btn btn-red">Lưu thông tin</button></form></div>{% endblock %}
+{% extends 'management/base.html' %}{% block manage_title %}{{ heading }}{% endblock %}{% block manage_content %}
+<div class="manager-heading"><div><h1>{{ heading }}</h1></div><a href="{% url back %}" class="btn btn-ghost"><i class="ph ph-arrow-left" aria-hidden="true"></i>Quay lại</a></div>
+<div class="paper-panel form-width"><form method="post" class="form-stack">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Lưu thông tin</button></form></div>
+{% endblock %}

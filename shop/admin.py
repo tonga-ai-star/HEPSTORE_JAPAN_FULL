@@ -47,3 +47,20 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
     def has_delete_permission(self,request,obj=None):return False
 @admin.register(ContactMessage)
 class ContactAdmin(admin.ModelAdmin):list_display=['full_name','email','subject','created_at'];readonly_fields=['full_name','email','subject','message','created_at']
+
+
+from .models import PaymentTransaction, StaffProfile  # noqa: E402
+
+
+@admin.register(PaymentTransaction)
+class PaymentTransactionAdmin(admin.ModelAdmin):
+    list_display = ('received_at', 'gateway', 'amount', 'status', 'order', 'provider_txn_id')
+    list_filter = ('status', 'gateway')
+    search_fields = ('content', 'provider_txn_id', 'reference_code', 'order__order_code')
+    readonly_fields = [f.name for f in PaymentTransaction._meta.fields]
+
+
+@admin.register(StaffProfile)
+class StaffProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role', 'phone')
+    list_filter = ('role',)

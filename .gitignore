@@ -5,3 +5,7 @@ db.sqlite3
 staticfiles/
 .env
 .DS_Store
+
+_workspace/
+_workspace_*/
+ADMIN_LOGIN.txt

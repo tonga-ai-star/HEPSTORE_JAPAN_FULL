@@ -14,9 +14,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from .models import Book, Category, Customer, Order, OrderItem, Supplier, PurchaseOrder, PurchaseItem, StockMovement
+from .models import Book, Category, Customer, Order, OrderItem, Supplier, PurchaseOrder, PurchaseItem, StockMovement, PaymentTransaction
 from .forms import SignUpForm, BookForm, SupplierForm, CustomerForm, ContactForm
-from .services import BusinessError, create_order, change_order_status, mark_paid, receive_purchase
+from .services import (BusinessError, allocate_arrivals, cancel_with_refund, change_order_status, create_order, phone_key,
+                       expire_stale_orders, mark_paid, receive_purchase)
 from .utils import qr_url
 
 def _session_cart(request,kind='hep_cart'):
@@ -31,14 +32,14 @@ def _cart_details(request,kind='hep_cart'):
         try:quantity=int(qty)
         except (TypeError,ValueError):continue
         if quantity<=0:continue
-        b=books[key];rows.append({'book':b,'qty':quantity,'line_total':quantity*b.price})
+        b=books[key];rows.append({'book':b,'qty':quantity,'line_total':quantity*b.price,'waiting':max(0,quantity-b.stock)})
     total=sum(row['line_total'] for row in rows)
     return rows,total
 
 def home(request):
     return render(request,'shop/home.html',{
-      'featured':Book.objects.filter(active=True,featured=True)[:8],
-      'new_books':Book.objects.filter(active=True)[:8],
+      'featured':Book.objects.filter(active=True,featured=True).select_related('category')[:8],
+      'new_books':Book.objects.filter(active=True).select_related('category')[:8],
       'categories':Category.objects.annotate(total_books=Count('books')).order_by('sort_order')[:5],
     })
 
@@ -58,7 +59,7 @@ def catalog(request):
 
 def book_detail(request,slug):
     book=get_object_or_404(Book.objects.select_related('category','supplier'),slug=slug,active=True)
-    similar=Book.objects.filter(active=True,category=book.category).exclude(pk=book.pk)[:4]
+    similar=Book.objects.filter(active=True,category=book.category).exclude(pk=book.pk).select_related('category')[:4]
     return render(request,'shop/detail.html',{'book':book,'similar':similar})
 
 @require_POST
@@ -68,11 +69,16 @@ def cart_add(request,pk):
     except (TypeError,ValueError):qty=0
     if not 1<=qty<=100:messages.error(request,'Số lượng không hợp lệ.');return redirect('book_detail',slug=book.slug)
     cart=_session_cart(request).copy();current=int(cart.get(str(pk),0))
-    if qty+current>book.stock:
+    if qty+current>book.stock and not book.allow_preorder:
         messages.error(request,f'Không đủ tồn kho, hiện còn {book.stock} cuốn.')
+    elif qty+current>100:
+        messages.error(request,'Mỗi đầu sách đặt tối đa 100 cuốn.')
     else:
         cart[str(pk)]=current+qty;request.session['hep_cart']=cart
-        messages.success(request,f'Đã thêm {book.title_vi} vào giỏ.')
+        if qty+current>book.stock:
+            messages.success(request,f'Đã thêm {book.title_vi} dạng đặt trước, có hàng khoảng {book.restock_days} ngày.')
+        else:
+            messages.success(request,f'Đã thêm {book.title_vi} vào giỏ.')
     return redirect('cart')
 
 @require_POST
@@ -82,7 +88,7 @@ def cart_update(request,pk):
     except (TypeError,ValueError):qty=-1
     if qty<0 or qty>1000:messages.error(request,'Số lượng không hợp lệ.');return redirect('cart')
     book=Book.objects.filter(pk=pk,active=True).first()
-    if qty>0 and (not book or qty>book.stock):
+    if qty>0 and (not book or (qty>book.stock and not book.allow_preorder) or qty>100):
         messages.error(request,'Số lượng vượt tồn hiện có.');return redirect('cart')
     if qty==0:cart.pop(str(pk),None)
     else:cart[str(pk)]=qty
@@ -92,6 +98,15 @@ def cart_update(request,pk):
 def cart(request):
     rows,total=_cart_details(request)
     return render(request,'shop/cart.html',{'rows':rows,'subtotal':total,'shipping':0 if total>=350000 else 25000,'total':total+(0 if total>=350000 else 25000) if rows else 0})
+
+def _waiting_days(rows):
+    return max((r['book'].restock_days for r in rows if r['waiting']),default=0)
+
+def _preorder_accepted(request,rows):
+    """The customer saw (and accepted) a wait at least as long as the one this order would get now."""
+    try:accepted=int(request.POST.get('accept_preorder','0'))
+    except (TypeError,ValueError):return False
+    return accepted>0 and accepted>=_waiting_days(rows)
 
 def checkout(request):
     rows,total=_cart_details(request)
@@ -109,18 +124,28 @@ def checkout(request):
             messages.error(request,'Chuyển khoản QR chưa được cấu hình. Vui lòng chọn COD.');return redirect('checkout')
         if not name or not phone or not address:
             messages.error(request,'Cần điền đầy đủ người nhận, số điện thoại, địa chỉ.');return redirect('checkout')
+        key=phone_key(phone)
+        open_orders=sum(1 for p in Order.objects.filter(source='web',status='new',payment_status='unpaid')
+                        .values_list('phone',flat=True) if phone_key(p)==key)
+        if open_orders>=settings.MAX_OPEN_WEB_ORDERS:
+            messages.error(request,f'Số điện thoại này đang có {open_orders} đơn chưa xác nhận. Thanh toán hoặc chờ Hép gọi xác nhận trước khi đặt thêm.')
+            return redirect('checkout')
         try:
             order=create_order(raw_lines=[(r['book'].pk,r['qty']) for r in rows],source='web',
               payment_method=method,full_name=name,phone=phone,email=email,address=address,
-              note=request.POST.get('note','')[:1200],user=request.user,shipping_fee=shipping)
+              note=request.POST.get('note','')[:1200],user=request.user,shipping_fee=shipping,
+              allow_preorder=_preorder_accepted(request,rows))
         except BusinessError as exc:
+            if any(r['waiting'] for r in _cart_details(request)[0]) and not _preorder_accepted(request,_cart_details(request)[0]):
+                messages.warning(request,'Một số sách vừa hết hàng nên đơn sẽ thành đặt trước. Xem ngày dự kiến bên dưới rồi bấm đặt hàng lại.')
+                return redirect('checkout')
             messages.error(request,str(exc));return redirect('cart')
         request.session['hep_cart']={}
         codes=request.session.get('hep_recent_orders',[])
         request.session['hep_recent_orders']=(codes+[order.order_code])[-20:]
         return redirect('order_success',code=order.order_code)
     initial={'full_name':request.user.get_full_name(),'email':request.user.email} if request.user.is_authenticated else {}
-    return render(request,'shop/checkout.html',{'rows':rows,'subtotal':total,'shipping':shipping,'total':total+shipping,'initial':initial})
+    return render(request,'shop/checkout.html',{'waiting_days':_waiting_days(rows),'rows':rows,'subtotal':total,'shipping':shipping,'total':total+shipping,'initial':initial})
 
 def order_success(request,code):
     order=get_object_or_404(Order.objects.prefetch_related('items'),order_code=code)
@@ -133,8 +158,13 @@ def track_order(request):
     if request.method=='POST':
         code=request.POST.get('order_code','').strip()[:32].upper()
         phone=request.POST.get('phone','').strip()[:30]
-        if code and phone:order=Order.objects.filter(order_code=code,phone=phone).first()
+        if code and phone:
+            order=Order.objects.filter(order_code=code).first()
+            if order and phone_key(order.phone)!=phone_key(phone):order=None
         if not order:messages.error(request,'Không tìm thấy đơn phù hợp với mã và số điện thoại.')
+        else:
+            codes=request.session.get('hep_recent_orders',[])
+            if order.order_code not in codes:request.session['hep_recent_orders']=(codes+[order.order_code])[-20:]
     return render(request,'shop/track.html',{'order':order,'qr':qr_url(order) if order else ''})
 
 def signup(request):
@@ -164,6 +194,7 @@ staff=lambda fn: staff_member_required(fn,login_url='/tai-khoan/login/')
 
 @staff
 def dashboard(request):
+    expire_stale_orders()
     start=timezone.localdate()-timedelta(days=6)
     graph=(Order.objects.filter(created_at__date__gte=start,status='completed')
         .annotate(day=TruncDate('created_at')).values('day').annotate(total=Sum('total')).order_by('day'))
@@ -183,6 +214,8 @@ def dashboard(request):
        'latest':Order.objects.select_related('customer')[:8],
        'alerts':Book.objects.filter(stock__lte=F('min_stock')).order_by('stock')[:6],
        'top_books':top,'chart':chart,
+       'open_payments':PaymentTransaction.objects.exclude(status__in=('matched','duplicate_paid')).count(),
+       'recent_payments':PaymentTransaction.objects.select_related('order')[:5],
     })
 
 @staff
@@ -195,7 +228,7 @@ def manage_books(request):
 @staff
 def manage_book_edit(request,pk=None):
     book=get_object_or_404(Book,pk=pk) if pk else None
-    form=BookForm(request.POST or None,instance=book)
+    form=BookForm(request.POST or None,instance=book,actor=request.user)
     if request.method=='POST' and form.is_valid():
         new=form.save();messages.success(request,'Đã lưu sách.');return redirect('manage_books')
     return render(request,'management/form.html',{'form':form,'heading':'Chỉnh sửa sách' if book else 'Thêm sách','back':'manage_books'})
@@ -219,6 +252,7 @@ def adjust_stock(request,pk):
         updated=Book.objects.filter(pk=pk,stock__gte=-delta).update(stock=F('stock')+delta) if delta<0 else Book.objects.filter(pk=pk).update(stock=F('stock')+delta)
         if not updated:messages.error(request,'Không thể điều chỉnh xuống số âm.');return redirect('manage_inventory')
         StockMovement.objects.create(book=book,delta=delta,reason=reason,reference='DIEU-CHINH',actor=request.user)
+        if delta>0:allocate_arrivals([book.pk],request.user)
     messages.success(request,'Đã điều chỉnh tồn kho và ghi nhật ký.');return redirect('manage_inventory')
 
 @staff
@@ -296,6 +330,7 @@ def customer_detail(request,pk):
 
 @staff
 def manage_orders(request):
+    expire_stale_orders()
     orders=Order.objects.select_related('customer').all()
     q=request.GET.get('q','').strip()[:80]
     source=request.GET.get('source','')
@@ -310,12 +345,26 @@ def manage_order_detail(request,pk):
     order=get_object_or_404(Order.objects.select_related('customer','created_by').prefetch_related('items__book'),pk=pk)
     transitions={ 'new':['confirmed','cancelled'],'confirmed':['packing','completed','cancelled'],
          'packing':['shipped','completed','cancelled'],'shipped':['completed'] }
-    return render(request,'management/order_detail.html',{'order':order,'qr':qr_url(order),'next_statuses':[(k,dict(Order.STATUSES)[k]) for k in transitions.get(order.status,[])]})
+    nexts=transitions.get(order.status,[])
+    if order.payment_method=='bank' and order.payment_status!='paid':
+        nexts=[k for k in nexts if k not in ('packing','shipped','completed')]  # blocked until the money arrives
+    if order.payment_status=='paid':
+        nexts=[k for k in nexts if k!='cancelled']  # paid orders are cancelled only through the refund form
+    return render(request,'management/order_detail.html',{'order':order,'qr':qr_url(order),'next_statuses':[(k,dict(Order.STATUSES)[k]) for k in nexts]})
 
 @staff
 @require_POST
 def order_status(request,pk):
     try:change_order_status(pk,request.POST.get('status',''),request.user);messages.success(request,'Đã cập nhật trạng thái.')
+    except BusinessError as exc:messages.error(request,str(exc))
+    return redirect('manage_order_detail',pk=pk)
+
+@staff
+@require_POST
+def order_refund(request,pk):
+    try:
+        cancel_with_refund(pk,request.user,request.POST.get('note',''))
+        messages.success(request,'Đã hủy đơn, ghi nhận hoàn tiền và trả sách về kho.')
     except BusinessError as exc:messages.error(request,str(exc))
     return redirect('manage_order_detail',pk=pk)
 
@@ -340,8 +389,8 @@ def social_order(request):
             fee=int(request.POST.get('shipping_fee','0'))
             order=create_order(raw_lines=_input_lines(request),source=source,payment_method=request.POST.get('payment_method','cod'),
                full_name=request.POST.get('full_name',''),phone=request.POST.get('phone',''),email=request.POST.get('email',''),
-               address=request.POST.get('address',''),note=request.POST.get('note',''),user=request.user,shipping_fee=fee)
-            messages.success(request,'Đã tạo đơn đa kênh, tồn kho đã cập nhật.');return redirect('manage_order_detail',pk=order.pk)
+               address=request.POST.get('address',''),note=request.POST.get('note',''),user=request.user,shipping_fee=fee,allow_preorder=True)
+            messages.success(request,'Đã tạo đơn đặt trước, dự kiến có hàng '+order.expected_date.strftime('%d/%m')+'.' if order.is_preorder else 'Đã tạo đơn đa kênh, tồn kho đã cập nhật.');return redirect('manage_order_detail',pk=order.pk)
         except (BusinessError,ValueError) as exc:messages.error(request,str(exc))
     return render(request,'management/manual_order.html',{'kind':'social','books':Book.objects.filter(active=True).order_by('title_vi'),'sources':Order.SOURCES})
 

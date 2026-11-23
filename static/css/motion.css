@@ -1,0 +1,136 @@
+/* Hiệu ứng đợt 2 của Hép Bookstore (công thức ở .claude/skills/hep-brand-ui/references/motion-recipes.md).
+   Chỉ animate transform và opacity. Mọi thứ nằm sau .motion-on hoặc trong prefers-reduced-motion: no-preference,
+   và khối reduced-motion cuối app.css tắt hết animation, transition. */
+
+/* ---------- page-transition (View Transitions đa trang) ---------- */
+@media (prefers-reduced-motion: no-preference){
+  @view-transition{navigation:auto}
+  .site-header{view-transition-name:site-header}
+  .manager-sidebar{view-transition-name:admin-sidebar}
+  ::view-transition-old(root){animation:vt-out 180ms cubic-bezier(.4,0,1,1) both}
+  ::view-transition-new(root){animation:vt-in 420ms var(--ease-out) 60ms both}
+  html:has(.management-shell)::view-transition-old(root){animation:vt-fade-out 160ms linear both}
+  html:has(.management-shell)::view-transition-new(root){animation:vt-fade-in 160ms linear both}
+  ::view-transition-group(book-cover){animation-duration:520ms;animation-timing-function:var(--ease-spring)}
+  .motion-on .detail-cover{view-transition-name:book-cover}
+}
+@keyframes vt-out{to{opacity:0;transform:translateY(-12px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(24px)}}
+@keyframes vt-fade-out{to{opacity:0}}
+@keyframes vt-fade-in{from{opacity:0}}
+
+/* ---------- hero-letter-drop ---------- */
+.motion-on [data-stagger]>[data-letter-drop]{opacity:1;transform:none}
+.motion-on [data-letter-drop]:not(.ld-ready){opacity:0}
+.ld-w{display:inline-block;white-space:nowrap}
+.ld-c{display:inline-block}
+.motion-on [data-letter-drop] .ld-c{opacity:0;transform:translateY(-.9em) rotate(var(--r,0deg))}
+.motion-on [data-letter-drop].is-in .ld-c{opacity:1;transform:none;transition:opacity 240ms var(--ease-out),transform 560ms var(--ease-spring);transition-delay:var(--d,0ms)}
+.motion-on [data-letter-drop] .scribble.is-in path{transition-delay:var(--ld-end,.35s)}
+
+/* draw-underline: bỏ non-scaling-stroke vì nó làm pathLength lệch, nét bị đứt đôi giữa chừng */
+.scribble path{vector-effect:none;stroke-width:3.4}
+.motion-on .scribble path{stroke-dasharray:1 1.2;stroke-dashoffset:1.06}
+
+/* ---------- bear-gaze ---------- */
+.bear-eyes{transform-box:view-box}
+.motion-on [data-bear] .bear-eyes{transform:translate(var(--ex,0px),var(--ey,0px));transition:transform 180ms var(--ease-out)}
+.motion-on [data-bear].is-idle .bear-eyes{transition:transform 600ms var(--ease-spring)}
+
+/* ---------- fly-to-cart ---------- */
+.fly-book{position:fixed;z-index:70;width:56px;height:76px;border-radius:4px;overflow:hidden;pointer-events:none;background:var(--navy);box-shadow:var(--shadow);will-change:transform}
+.fly-book>*{width:100%!important;height:100%!important;padding:4px!important;border-left-width:4px!important;border-radius:4px}
+.fly-book .book-cover>*{display:none}
+.fly-book img{object-fit:cover;padding:0!important}
+[data-fly-cart] [aria-busy="true"]{cursor:progress}
+
+/* ---------- shelf-pin ---------- */
+@media (max-width:1023px){
+  .shelf-track.book-grid{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:16px;scrollbar-width:thin}
+  .shelf-track.book-grid>.book-card{flex:0 0 220px;margin-top:0;scroll-snap-align:start}
+}
+@media (max-width:767px){
+  .shelf-track.book-grid>.book-card{flex-basis:170px}
+}
+@supports (animation-timeline: view()){
+  @media (min-width:1024px) and (prefers-reduced-motion: no-preference){
+    .motion-on .shelf-pin{height:calc(100vh + var(--shelf-shift,0px));view-timeline:--shelf block}
+    .motion-on .shelf-sticky{position:sticky;top:96px;overflow:hidden;padding-block:20px 40px}
+    .motion-on .shelf-sticky::after{content:'';position:absolute;left:0;right:0;bottom:14px;height:10px;border-radius:var(--radius-pill);background:var(--navy)}
+    .motion-on .shelf-track.book-grid{display:flex;gap:28px;width:max-content;animation:shelf-slide linear both;animation-timeline:--shelf;animation-range:contain 0% contain 100%}
+    .motion-on .shelf-track.book-grid>.book-card{flex:0 0 240px;margin-top:0}
+    .motion-on .shelf-track.book-grid>.book-card:nth-child(odd){rotate:-1.5deg}
+    .motion-on .shelf-track.book-grid>.book-card:nth-child(even){rotate:1.5deg}
+  }
+}
+@keyframes shelf-slide{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--shelf-shift,0px)))}}
+
+/* ---------- pay-wait-pulse ---------- */
+.motion-on .pay-wait-dot::after{animation:pay-ring 1400ms var(--ease-out) infinite}
+@keyframes pay-ring{from{transform:scale(1);opacity:.7}to{transform:scale(2.6);opacity:0}}
+
+/* ---------- pay-celebrate (JS celebrate.js) ---------- */
+.pay-rain{position:fixed;inset:0;z-index:60;overflow:hidden;pointer-events:none}
+.pay-rain>*{position:absolute;top:0}
+.rain-book{width:14px;height:18px;border-radius:2px;border-left:3px solid var(--navy-deep);background:var(--navy)}
+.rain-book.b2{background:var(--orange);border-left-color:var(--orange-ink)}
+.rain-book.b3{background:var(--surface-2);border:1.5px solid var(--navy);border-left-width:3px}
+
+/* ---------- hero-fan ---------- */
+.motion-on .hero-stack .stack-cover{transition:transform 600ms var(--ease-spring)}
+.motion-on .hero-art:hover .s1,.motion-on .hero-art.is-fan .s1{--fan-x:-14px;--fan-y:6px;--fan-r:-4deg}
+.motion-on .hero-art:hover .s3,.motion-on .hero-art.is-fan .s3{--fan-x:14px;--fan-y:-4px;--fan-r:4deg}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .motion-on .hero-stack .s1{animation:drift-1 linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+    .motion-on .hero-stack .s2{animation:drift-2 linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+    .motion-on .hero-stack .s3{animation:drift-3 linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
+  }
+}
+@keyframes drift-1{to{translate:0 -40px}}
+@keyframes drift-2{to{translate:0 -24px}}
+@keyframes drift-3{to{translate:0 -56px}}
+
+/* ---------- empty-bear-sway (một gấu chuyển động mỗi trang) ---------- */
+.empty-state .bear{transform-origin:50% 90%}
+.motion-on body:not(:has([data-bear])) .empty-state:not(.forbidden-state).is-in .bear{animation:bear-sway 2.4s ease-in-out infinite alternate}
+@keyframes bear-sway{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+
+/* ---------- quản trị: bar-grow, txn-fresh, forbidden-shake, chấm tiền vào ---------- */
+.motion-on .bar-fill{animation:bar-grow 700ms var(--ease-spring) both;animation-delay:calc(var(--i,0) * 60ms + 120ms)}
+.motion-on .bar-col:last-child .bar-fill{animation:bar-grow 700ms var(--ease-spring) both,bar-bounce 300ms var(--ease-out);animation-delay:calc(var(--i,0) * 60ms + 120ms),calc(var(--i,0) * 60ms + 820ms)}
+.motion-on .bar-value{animation:bar-label 250ms var(--ease-out) both;animation-delay:calc(var(--i,0) * 60ms + 620ms)}
+@keyframes bar-grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes bar-bounce{50%{transform:scaleY(1.06)}}
+@keyframes bar-label{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[data-txn-id]>:first-child{position:relative}
+.is-fresh>:first-child::before{content:'';position:absolute;left:-10px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--orange)}
+tr.is-fresh>td:first-child::before{left:8px}
+tr.is-fresh>td:first-child{padding-left:24px}
+.payments-panel .simple-line.is-fresh{padding-left:12px}
+.payments-panel .simple-line.is-fresh>:first-child::before{left:-12px}
+.motion-on .is-fresh>:first-child::before{animation:fresh-pop 400ms var(--ease-spring) both,fresh-blink 600ms ease-in-out 400ms 6 alternate}
+@keyframes fresh-pop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes fresh-blink{to{opacity:.35}}
+.motion-on .side-item.has-fresh::after{animation:fresh-pop 400ms var(--ease-spring) both}
+.motion-on .forbidden-state .lock-bear .bear{animation:bear-no 700ms var(--ease-out) 300ms}
+@keyframes bear-no{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-4deg)}}
+
+/* ---------- 3D (three.js) ---------- */
+.hero{position:relative;isolation:isolate;overflow:clip}
+.hero-grid{position:relative;z-index:1}
+.hero-sakura{position:absolute;inset:0;z-index:0;pointer-events:none}
+.three-burst{position:fixed;inset:0;z-index:60;pointer-events:none}
+[data-three]>canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 600ms var(--ease-out)}
+[data-three]>canvas.is-shown{opacity:1}
+.hero-art>canvas{z-index:1}
+.hero-stack{transition:opacity 400ms var(--ease-out)}
+.hero-art[data-three="on"] .hero-stack{opacity:0}
+.hero-art[data-three="on"] .stack-cover{animation:none}
+
+@media (prefers-reduced-motion: reduce){
+  .ld-c,[data-letter-drop]{opacity:1!important;transform:none!important}
+  .pay-rain{display:none}
+  .hero-art .hero-stack{opacity:1!important}
+  .hero-sakura,.three-burst{display:none}
+}

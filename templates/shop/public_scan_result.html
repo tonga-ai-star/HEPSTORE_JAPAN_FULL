@@ -3,27 +3,26 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/public_scan.css' %}">{% endblock %}
 {% block content %}
 <section class="wrap scan-result-page">
- <div class="scan-path"><a href="{% url 'home' %}">Trang chủ</a> / <a href="{% url 'public_scan' %}">Quét mã sách</a> / {{ scanned_code }}</div>
+ <nav class="scan-path" aria-label="Đường dẫn"><a href="{% url 'home' %}">Trang chủ</a> / <a href="{% url 'public_scan' %}">Quét mã sách</a> / <span class="tabular">{{ scanned_code }}</span></nav>
  {% if book %}
  <div class="scan-result-card">
   <div class="scan-result-cover">
-    {% if book.cover and book.cover != 'cover-default.svg' %}<img src="{% static 'img/' %}{{ book.cover }}" alt="Bìa sách {{ book.title_vi }}">
-    {% else %}<div class="scan-result-placeholder"><span>本</span><strong>{{ book.title_vi }}</strong></div>{% endif %}
+    <div class="scan-cover-tilt" data-tilt>{% if book.cover and book.cover != 'cover-default.svg' %}<img src="{% static 'img/' %}{{ book.cover }}" alt="Bìa sách {{ book.title_vi }}">
+    {% else %}{% include 'shop/_cover.html' %}{% endif %}</div>
   </div>
-  <div class="scan-result-info"><span class="scan-kicker">ĐÃ TÌM THẤY SÁCH · {{ book.category.name_vi }}</span><h1>{{ book.title_vi }}</h1>
-    {% if book.title_ja %}<p class="scan-japanese">{{ book.title_ja }}</p>{% endif %}
+  <div class="scan-result-info" data-stagger><span class="scan-kicker">Đã tìm thấy sách · {{ book.category.name_vi }}</span><h1>{{ book.title_vi }}</h1>
+    {% if book.title_ja %}<p class="scan-japanese" lang="ja">{{ book.title_ja }}</p>{% endif %}
     <p class="scan-author">Tác giả: {{ book.author_ja|default:'Đang cập nhật' }}</p>
-    <div class="scan-price-label">GIÁ BÁN HIỆN TẠI</div><div class="scan-price">{{ book.price|money }}</div>
-    {% if book.stock > 0 %}<p class="scan-available">● Còn hàng ({{ book.stock }} cuốn)</p>{% else %}<p class="scan-unavailable">● Tạm hết hàng</p>{% endif %}
+    <div><div class="scan-price-label">Giá bán hiện tại</div><div class="scan-price">{{ book.price|money }}</div></div>
+    <p>{% if book.stock > 0 %}<span class="pill scan-available">Còn hàng ({{ book.stock }} cuốn)</span>{% elif book.allow_preorder %}<span class="pill preorder">Hết hàng · có hàng khoảng {{ book.restock_days }} ngày</span>{% else %}<span class="pill unpaid scan-unavailable">Tạm hết hàng</span>{% endif %}</p>
     <div class="scan-detail-facts"><div><span>Mã ISBN / SKU</span><strong>{{ book.isbn }}</strong></div><div><span>Nhà xuất bản</span><strong>{{ book.publisher|default:'Đang cập nhật' }}</strong></div></div>
-    <div class="scan-result-actions"><a class="btn btn-dark" href="{% url 'book_detail' book.slug %}">Xem trang sản phẩm ↗</a>
-     {% if book.stock > 0 %}<form method="post" action="{% url 'cart_add' book.pk %}">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button class="btn btn-red">Thêm vào giỏ hàng</button></form>{% endif %}
-     <a class="btn btn-outline" href="{% url 'public_scan' %}">Quét mã khác</a></div>
-    <p class="scan-disclaimer">Giá và tồn kho được đọc trực tiếp từ dữ liệu Hép Store tại thời điểm xem trang. Giá không tự đồng bộ từ ISBN quốc tế.</p>
+    <div class="scan-result-actions">{% if book.stock > 0 or book.allow_preorder %}<form method="post" action="{% url 'cart_add' book.pk %}" data-fly-cart>{% csrf_token %}<input type="hidden" name="quantity" value="1"><button class="btn btn-primary">{% if book.stock > 0 %}Thêm vào giỏ hàng{% else %}Đặt trước{% endif %}</button></form>{% endif %}<a class="btn btn-navy" href="{% url 'book_detail' book.slug %}">Xem trang sản phẩm</a>
+     <a class="btn btn-ghost" href="{% url 'public_scan' %}">Quét mã khác</a></div>
+    <p class="scan-disclaimer">Giá và tồn kho được đọc trực tiếp từ dữ liệu Hép Bookstore tại thời điểm xem trang. Giá không tự đồng bộ từ ISBN quốc tế.</p>
   </div>
  </div>
  {% else %}
- <div class="scan-not-found"><span class="scan-not-found-symbol">?</span><h1>Chưa tìm thấy sách tương ứng</h1><p>Hệ thống chưa có cuốn sách mang mã <strong>{{ scanned_code }}</strong> đang được bật bán. Hãy kiểm tra ISBN hoặc yêu cầu quản trị thêm sách vào kho.</p><div><a class="btn btn-red" href="{% url 'public_scan' %}">Quét lại mã khác</a><a class="btn btn-outline" href="{% url 'catalog' %}">Xem danh mục sách</a></div></div>
+ <div class="empty-state scan-not-found">{% include 'shop/_bear.html' with size=88 %}<h1>Chưa tìm thấy sách tương ứng</h1><p>Hệ thống chưa có cuốn sách mang mã <strong>{{ scanned_code }}</strong> đang được bật bán. Hãy kiểm tra ISBN hoặc yêu cầu quản trị thêm sách vào kho.</p><div class="scan-not-found-actions"><a class="btn btn-primary" href="{% url 'public_scan' %}">Quét lại mã khác</a><a class="btn btn-ghost" href="{% url 'catalog' %}">Xem danh mục sách</a></div></div>
  {% endif %}
 </section>
 {% endblock %}

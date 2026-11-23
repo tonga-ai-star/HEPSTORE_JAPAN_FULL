@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, scan_views
+from . import views, scan_views, payment_views, staff_views
 urlpatterns=[
  path('',views.home,name='home'),
  path('sach/',views.catalog,name='catalog'),
@@ -37,11 +37,20 @@ urlpatterns=[
  path('management/orders/<int:pk>/',views.manage_order_detail,name='manage_order_detail'),
  path('management/orders/<int:pk>/status/',views.order_status,name='order_status'),
  path('management/orders/<int:pk>/paid/',views.payment_confirm,name='payment_confirm'),
+ path('management/orders/<int:pk>/refund/',views.order_refund,name='order_refund'),
  path('management/social/new/',views.social_order,name='social_order'),
  path('management/pos/',views.pos,name='pos'),
  path('management/reports/',views.manage_reports,name='manage_reports'),
  path('management/export/orders.csv',views.export_orders,name='export_orders'),
 path('quet-ma/', scan_views.public_scan, name='public_scan'),
+ path('api/sepay/webhook/',payment_views.sepay_webhook,name='sepay_webhook'),
+ path('don-hang/<str:code>/thanh-toan.json',payment_views.order_payment_status,name='order_payment_status'),
+ path('management/payments/',payment_views.manage_payments,name='manage_payments'),
+ path('management/payments/latest.json',payment_views.payments_latest,name='payments_latest'),
+ path('management/payments/<int:pk>/resolve/',payment_views.payment_resolve,name='payment_resolve'),
+ path('management/staff/',staff_views.manage_staff,name='manage_staff'),
+ path('management/staff/add/',staff_views.staff_add,name='staff_add'),
+ path('management/staff/<int:pk>/edit/',staff_views.staff_edit,name='staff_edit'),
 path('quet-ma/tra-cuu/',scan_views.public_scan_lookup,name='public_scan_lookup'),
 path( 'quet-ma/sach/<str:code>/',scan_views.public_scan_result,name='public_scan_result'),
 ]
